@@ -15,6 +15,12 @@ jest.mock('../../utils/fileUtils', () => ({
   ensureDirectoryExists: jest.fn(),
 }));
 
+// Mock the new architecture modules
+jest.mock('../../generators/document/ComponentDocumentGenerator');
+jest.mock('../../generators/document/PatternDetector');
+jest.mock('../../generators/document/GuidelineGenerator');
+jest.mock('../../generators/document/MarkdownFormatter');
+
 describe('AIDocumentGenerator', () => {
   let generator: AIDocumentGenerator;
 
@@ -95,11 +101,13 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate(components, tokens, options);
 
-      expect(result.version).toBe('1.0.0');
-      expect(result.components).toHaveLength(2);
-      expect(result.tokens).toEqual(tokens);
-      expect(result.patterns).toBeInstanceOf(Array);
-      expect(result.guidelines).toBeInstanceOf(Array);
+      expect(result.document.version).toBe('1.0.0');
+      expect(result.document.components).toHaveLength(2);
+      expect(result.document.tokens).toEqual(tokens);
+      expect(result.document.patterns).toBeInstanceOf(Array);
+      expect(result.document.guidelines).toBeInstanceOf(Array);
+      expect(result.metadata).toBeDefined();
+      expect(result.metadata.componentsProcessed).toBe(2);
     });
 
     it('should generate component documentation with correct structure', async () => {
@@ -116,7 +124,7 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate([component], tokens, options);
 
-      const buttonDoc = result.components[0];
+      const buttonDoc = result.document.components[0];
       expect(buttonDoc.id).toBe('atoms-button');
       expect(buttonDoc.name).toBe('Button');
       expect(buttonDoc.category).toBe('atoms');
@@ -138,7 +146,7 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate([component], tokens, options);
 
-      const buttonDoc = result.components[0];
+      const buttonDoc = result.document.components[0];
       expect(buttonDoc.styles.responsive).toBe(true);
       expect(buttonDoc.styles.darkMode).toBe(true);
     });
@@ -153,7 +161,7 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate([component], tokens, options);
 
-      const buttonDoc = result.components[0];
+      const buttonDoc = result.document.components[0];
       expect(buttonDoc.styles.animations).toContain('animate-pulse');
       expect(buttonDoc.styles.animations).toContain('transition-colors');
       expect(buttonDoc.styles.animations).toContain('duration-300');
@@ -173,7 +181,7 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate([component], tokens, options);
 
-      const buttonDoc = result.components[0];
+      const buttonDoc = result.document.components[0];
       expect(buttonDoc.examples).toHaveLength(2);
       expect(buttonDoc.examples[0].title).toBe('基本的な使用方法');
       expect(buttonDoc.examples[0].code).toContain('import { Button }');
@@ -194,19 +202,19 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate(components, tokens, options);
 
-      expect(result.patterns).toHaveLength(2);
+      expect(result.document.patterns).toHaveLength(2);
       
-      const buttonPattern = result.patterns.find(p => p.name === 'ボタンシステム');
+      const buttonPattern = result.document.patterns.find(p => p.name === 'ボタンシステム');
       expect(buttonPattern).toBeDefined();
       expect(buttonPattern?.components).toContain('PrimaryButton');
       expect(buttonPattern?.components).toContain('SecondaryButton');
       
-      const formPattern = result.patterns.find(p => p.name === 'フォームシステム');
+      const formPattern = result.document.patterns.find(p => p.name === 'フォームシステム');
       expect(formPattern).toBeDefined();
       expect(formPattern?.components).toContain('LoginForm');
       expect(formPattern?.components).toContain('ContactForm');
       
-      const cardPattern = result.patterns.find(p => p.name === 'カードシステム');
+      const cardPattern = result.document.patterns.find(p => p.name === 'カードシステム');
       expect(cardPattern).toBeDefined();
       expect(cardPattern?.components).toContain('ProductCard');
     });
@@ -223,11 +231,11 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate(components, tokens, options);
 
-      expect(result.guidelines).toHaveLength(5);
-      expect(result.guidelines[0]).toContain('カラーパレット');
-      expect(result.guidelines[1]).toContain('スペーシング');
-      expect(result.guidelines[2]).toContain('レスポンシブデザイン');
-      expect(result.guidelines[3]).toContain('ダークモード');
+      expect(result.document.guidelines).toHaveLength(5);
+      expect(result.document.guidelines[0]).toContain('カラーパレット');
+      expect(result.document.guidelines[1]).toContain('スペーシング');
+      expect(result.document.guidelines[2]).toContain('レスポンシブデザイン');
+      expect(result.document.guidelines[3]).toContain('ダークモード');
     });
 
     it('should find related components', async () => {

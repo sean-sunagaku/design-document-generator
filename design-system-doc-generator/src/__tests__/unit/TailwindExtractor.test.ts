@@ -15,6 +15,14 @@ jest.mock('fs', () => ({
   },
 }));
 
+// Mock the new architecture modules
+jest.mock('../../extractors/ast/ComponentAnalyzer');
+jest.mock('../../extractors/ast/ASTTraverser');
+jest.mock('../../extractors/ast/TailwindClassExtractor');
+jest.mock('../../extractors/ast/PropExtractor');
+jest.mock('../../extractors/ast/JSXStructureExtractor');
+jest.mock('../../extractors/ast/ComponentCategorizer');
+
 describe('TailwindExtractor', () => {
   let extractor: TailwindExtractor;
 

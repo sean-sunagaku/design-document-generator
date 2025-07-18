@@ -107,3 +107,119 @@ export interface Snapshot {
   tokens: DesignTokens;
   project: ProjectInfo;
 }
+
+// AST関連の型
+export interface ASTNode {
+  type: string;
+  [key: string]: any;
+}
+
+export interface TraversalCallbacks {
+  onClassName?: (node: ASTNode) => void;
+  onProp?: (prop: PropInfo) => void;
+  onImport?: (dep: string) => void;
+  onJSXReturn?: (element: JSXElement) => void;
+}
+
+export interface ComponentInfo {
+  name: string;
+  filePath: string;
+  category: ExtractedComponent['category'];
+}
+
+// ドキュメント生成関連の型
+export interface DocumentGenerationContext {
+  components: ExtractedComponent[];
+  tokens: DesignTokens;
+  options: GeneratorOptions;
+}
+
+export interface PatternDetectionResult {
+  patterns: DesignPattern[];
+  relatedComponents: Map<string, string[]>;
+}
+
+export interface DesignPattern {
+  name: string;
+  description: string;
+  components: string[];
+  examples: string[];
+}
+
+export interface GenerationResult {
+  document: AIDocument;
+  metadata: GenerationMetadata;
+}
+
+export interface AIDocument {
+  version: string;
+  generated: string;
+  project: ProjectInfo;
+  tokens: DesignTokens;
+  components: ComponentDoc[];
+  patterns: DesignPattern[];
+  guidelines: string[];
+}
+
+export interface ComponentDoc {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  usage: string;
+  props: PropDoc[];
+  styles: StyleInfo;
+  examples: CodeExample[];
+  relatedComponents: string[];
+  jsxStructure?: JSXElement;
+}
+
+export interface PropDoc {
+  name: string;
+  type: string;
+  required: boolean;
+  defaultValue?: string;
+  description: string;
+}
+
+export interface StyleInfo {
+  tailwindClasses: string[];
+  customStyles?: string;
+  responsive: boolean;
+  darkMode: boolean;
+  animations: string[];
+}
+
+export interface CodeExample {
+  title: string;
+  code: string;
+  description?: string;
+  validation?: ValidationResult;
+}
+
+export interface ValidationResult {
+  isValid: boolean;
+  errors: ValidationError[];
+  warnings: ValidationWarning[];
+}
+
+export interface ValidationError {
+  line: number;
+  column: number;
+  message: string;
+  code?: string;
+}
+
+export interface ValidationWarning {
+  line: number;
+  column: number;
+  message: string;
+  code?: string;
+}
+
+export interface GenerationMetadata {
+  timestamp: string;
+  version: string;
+  duration: number;
+  componentsProcessed: number;
+}

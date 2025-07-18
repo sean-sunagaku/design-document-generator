@@ -85,7 +85,7 @@ export class GenerateCommand {
     console.log(chalk.blue('📝 Generating documentation...'));
 
     // Generate AI document
-    const aiDocument = await documentGenerator.generate(components, tokens, {
+    const result = await documentGenerator.generate(components, tokens, {
       includeExamples: this.options.includeExamples,
       outputFormat: 'json',
     });
@@ -98,11 +98,11 @@ export class GenerateCommand {
     const markdownOutputPath = path.join(outputPath, 'design-system.md');
     const indexOutputPath = path.join(outputPath, 'index.md');
 
-    await documentGenerator.saveAsJSON(aiDocument, jsonOutputPath);
-    await documentGenerator.saveAsMarkdown(aiDocument, markdownOutputPath);
+    await documentGenerator.saveAsJSON(result.document, jsonOutputPath);
+    await documentGenerator.saveAsMarkdown(result.document, markdownOutputPath);
 
     // Create index file
-    await this.createIndexFile(aiDocument, indexOutputPath);
+    await this.createIndexFile(result.document, indexOutputPath);
 
     console.log(chalk.green('✅ Documentation generated successfully!'));
     console.log(chalk.gray(`Output directory: ${outputPath}`));
@@ -112,7 +112,7 @@ export class GenerateCommand {
     console.log(chalk.gray(`  - index.md (overview)`));
 
     // Display summary
-    this.displaySummary(aiDocument);
+    this.displaySummary(result.document);
   }
 
   private async createIndexFile(aiDocument: any, outputPath: string): Promise<void> {
