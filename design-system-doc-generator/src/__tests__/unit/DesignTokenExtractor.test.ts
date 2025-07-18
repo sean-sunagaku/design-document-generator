@@ -15,26 +15,12 @@ jest.mock('path', () => ({
   resolve: jest.fn().mockImplementation((path) => path),
 }));
 
-// Mock the require.cache
-const originalRequire = require;
-beforeAll(() => {
-  (global as any).require = mockRequire;
-});
-
-afterAll(() => {
-  (global as any).require = originalRequire;
-});
-
 describe('DesignTokenExtractor', () => {
   let extractor: DesignTokenExtractor;
 
   beforeEach(() => {
     extractor = new DesignTokenExtractor();
     jest.clearAllMocks();
-    
-    // Mock require.cache
-    mockRequire.cache = {};
-    mockRequire.resolve = jest.fn().mockImplementation((path) => path);
   });
 
   describe('extractFromTailwindConfig', () => {

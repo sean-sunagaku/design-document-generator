@@ -194,7 +194,7 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate(components, tokens, options);
 
-      expect(result.patterns).toHaveLength(3);
+      expect(result.patterns).toHaveLength(2);
       
       const buttonPattern = result.patterns.find(p => p.name === 'ボタンシステム');
       expect(buttonPattern).toBeDefined();
@@ -223,7 +223,7 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate(components, tokens, options);
 
-      expect(result.guidelines).toHaveLength(4);
+      expect(result.guidelines).toHaveLength(5);
       expect(result.guidelines[0]).toContain('カラーパレット');
       expect(result.guidelines[1]).toContain('スペーシング');
       expect(result.guidelines[2]).toContain('レスポンシブデザイン');

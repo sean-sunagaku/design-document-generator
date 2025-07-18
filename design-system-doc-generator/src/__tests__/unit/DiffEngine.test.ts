@@ -1,6 +1,13 @@
 import { DiffEngine } from '../../core/DiffEngine';
 import { Snapshot, ExtractedComponent } from '../../types';
 
+// Mock jsondiffpatch
+jest.mock('jsondiffpatch', () => ({
+  create: jest.fn(() => ({
+    diff: jest.fn(),
+  })),
+}));
+
 describe('DiffEngine', () => {
   let diffEngine: DiffEngine;
 

@@ -1,0 +1,1369 @@
+{
+  "version": "1.0.0",
+  "generated": "2025-07-18T21:16:22.604Z",
+  "project": {
+    "name": "sample-react-app",
+    "version": "1.0.0",
+    "framework": "react",
+    "styling": "tailwindcss"
+  },
+  "tokens": {
+    "colors": {
+      "primary-50": {
+        "value": "#eff6ff",
+        "rgb": "rgb(239, 246, 255)",
+        "usage": []
+      },
+      "primary-100": {
+        "value": "#dbeafe",
+        "rgb": "rgb(219, 234, 254)",
+        "usage": []
+      },
+      "primary-200": {
+        "value": "#bfdbfe",
+        "rgb": "rgb(191, 219, 254)",
+        "usage": []
+      },
+      "primary-300": {
+        "value": "#93c5fd",
+        "rgb": "rgb(147, 197, 253)",
+        "usage": []
+      },
+      "primary-400": {
+        "value": "#60a5fa",
+        "rgb": "rgb(96, 165, 250)",
+        "usage": []
+      },
+      "primary-500": {
+        "value": "#3b82f6",
+        "rgb": "rgb(59, 130, 246)",
+        "usage": []
+      },
+      "primary-600": {
+        "value": "#2563eb",
+        "rgb": "rgb(37, 99, 235)",
+        "usage": []
+      },
+      "primary-700": {
+        "value": "#1d4ed8",
+        "rgb": "rgb(29, 78, 216)",
+        "usage": []
+      },
+      "primary-800": {
+        "value": "#1e40af",
+        "rgb": "rgb(30, 64, 175)",
+        "usage": []
+      },
+      "primary-900": {
+        "value": "#1e3a8a",
+        "rgb": "rgb(30, 58, 138)",
+        "usage": []
+      },
+      "secondary-50": {
+        "value": "#f9fafb",
+        "rgb": "rgb(249, 250, 251)",
+        "usage": []
+      },
+      "secondary-100": {
+        "value": "#f3f4f6",
+        "rgb": "rgb(243, 244, 246)",
+        "usage": []
+      },
+      "secondary-200": {
+        "value": "#e5e7eb",
+        "rgb": "rgb(229, 231, 235)",
+        "usage": []
+      },
+      "secondary-300": {
+        "value": "#d1d5db",
+        "rgb": "rgb(209, 213, 219)",
+        "usage": []
+      },
+      "secondary-400": {
+        "value": "#9ca3af",
+        "rgb": "rgb(156, 163, 175)",
+        "usage": []
+      },
+      "secondary-500": {
+        "value": "#6b7280",
+        "rgb": "rgb(107, 114, 128)",
+        "usage": []
+      },
+      "secondary-600": {
+        "value": "#4b5563",
+        "rgb": "rgb(75, 85, 99)",
+        "usage": []
+      },
+      "secondary-700": {
+        "value": "#374151",
+        "rgb": "rgb(55, 65, 81)",
+        "usage": []
+      },
+      "secondary-800": {
+        "value": "#1f2937",
+        "rgb": "rgb(31, 41, 55)",
+        "usage": []
+      },
+      "secondary-900": {
+        "value": "#111827",
+        "rgb": "rgb(17, 24, 39)",
+        "usage": []
+      },
+      "success-50": {
+        "value": "#f0fdf4",
+        "rgb": "rgb(240, 253, 244)",
+        "usage": []
+      },
+      "success-100": {
+        "value": "#dcfce7",
+        "rgb": "rgb(220, 252, 231)",
+        "usage": []
+      },
+      "success-200": {
+        "value": "#bbf7d0",
+        "rgb": "rgb(187, 247, 208)",
+        "usage": []
+      },
+      "success-300": {
+        "value": "#86efac",
+        "rgb": "rgb(134, 239, 172)",
+        "usage": []
+      },
+      "success-400": {
+        "value": "#4ade80",
+        "rgb": "rgb(74, 222, 128)",
+        "usage": []
+      },
+      "success-500": {
+        "value": "#22c55e",
+        "rgb": "rgb(34, 197, 94)",
+        "usage": []
+      },
+      "success-600": {
+        "value": "#16a34a",
+        "rgb": "rgb(22, 163, 74)",
+        "usage": []
+      },
+      "success-700": {
+        "value": "#15803d",
+        "rgb": "rgb(21, 128, 61)",
+        "usage": []
+      },
+      "success-800": {
+        "value": "#166534",
+        "rgb": "rgb(22, 101, 52)",
+        "usage": []
+      },
+      "success-900": {
+        "value": "#14532d",
+        "rgb": "rgb(20, 83, 45)",
+        "usage": []
+      },
+      "danger-50": {
+        "value": "#fef2f2",
+        "rgb": "rgb(254, 242, 242)",
+        "usage": []
+      },
+      "danger-100": {
+        "value": "#fee2e2",
+        "rgb": "rgb(254, 226, 226)",
+        "usage": []
+      },
+      "danger-200": {
+        "value": "#fecaca",
+        "rgb": "rgb(254, 202, 202)",
+        "usage": []
+      },
+      "danger-300": {
+        "value": "#fca5a5",
+        "rgb": "rgb(252, 165, 165)",
+        "usage": []
+      },
+      "danger-400": {
+        "value": "#f87171",
+        "rgb": "rgb(248, 113, 113)",
+        "usage": []
+      },
+      "danger-500": {
+        "value": "#ef4444",
+        "rgb": "rgb(239, 68, 68)",
+        "usage": []
+      },
+      "danger-600": {
+        "value": "#dc2626",
+        "rgb": "rgb(220, 38, 38)",
+        "usage": []
+      },
+      "danger-700": {
+        "value": "#b91c1c",
+        "rgb": "rgb(185, 28, 28)",
+        "usage": []
+      },
+      "danger-800": {
+        "value": "#991b1b",
+        "rgb": "rgb(153, 27, 27)",
+        "usage": []
+      },
+      "danger-900": {
+        "value": "#7f1d1d",
+        "rgb": "rgb(127, 29, 29)",
+        "usage": []
+      },
+      "warning-50": {
+        "value": "#fffbeb",
+        "rgb": "rgb(255, 251, 235)",
+        "usage": []
+      },
+      "warning-100": {
+        "value": "#fef3c7",
+        "rgb": "rgb(254, 243, 199)",
+        "usage": []
+      },
+      "warning-200": {
+        "value": "#fde68a",
+        "rgb": "rgb(253, 230, 138)",
+        "usage": []
+      },
+      "warning-300": {
+        "value": "#fcd34d",
+        "rgb": "rgb(252, 211, 77)",
+        "usage": []
+      },
+      "warning-400": {
+        "value": "#fbbf24",
+        "rgb": "rgb(251, 191, 36)",
+        "usage": []
+      },
+      "warning-500": {
+        "value": "#f59e0b",
+        "rgb": "rgb(245, 158, 11)",
+        "usage": []
+      },
+      "warning-600": {
+        "value": "#d97706",
+        "rgb": "rgb(217, 119, 6)",
+        "usage": []
+      },
+      "warning-700": {
+        "value": "#b45309",
+        "rgb": "rgb(180, 83, 9)",
+        "usage": []
+      },
+      "warning-800": {
+        "value": "#92400e",
+        "rgb": "rgb(146, 64, 14)",
+        "usage": []
+      },
+      "warning-900": {
+        "value": "#78350f",
+        "rgb": "rgb(120, 53, 15)",
+        "usage": []
+      }
+    },
+    "spacing": {
+      "18": "4.5rem",
+      "88": "22rem",
+      "128": "32rem"
+    },
+    "typography": {
+      "fontFamily": {},
+      "fontSize": {
+        "2xs": "0.625rem",
+        "3xl": "1.875rem",
+        "4xl": "2.25rem",
+        "5xl": "3rem",
+        "6xl": "3.75rem",
+        "7xl": "4.5rem"
+      },
+      "fontWeight": {},
+      "lineHeight": {}
+    },
+    "breakpoints": {},
+    "shadows": {
+      "soft": "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
+      "medium": "0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      "hard": "0 10px 40px -10px rgba(0, 0, 0, 0.2)"
+    },
+    "borderRadius": {
+      "xl": "0.75rem",
+      "2xl": "1rem",
+      "3xl": "1.5rem"
+    },
+    "custom": {}
+  },
+  "components": [
+    {
+      "id": "pages-homepage",
+      "name": "HomePage",
+      "category": "pages",
+      "description": "完全なページコンポーネント「HomePage」。フレックスボックスレイアウトを使用、レスポンシブ対応。",
+      "usage": "<HomePage />",
+      "props": [],
+      "styles": {
+        "tailwindClasses": [
+          "bg-secondary-100",
+          "bg-secondary-50",
+          "flex",
+          "font-bold",
+          "font-medium",
+          "h-full",
+          "lg:px-8",
+          "max-w-7xl",
+          "min-h-screen",
+          "object-center",
+          "object-cover",
+          "overflow-hidden",
+          "rounded-lg",
+          "sm:px-6",
+          "space-x-2",
+          "space-x-3",
+          "space-y-4",
+          "space-y-6",
+          "text-2xl",
+          "text-3xl",
+          "text-danger-600",
+          "text-lg",
+          "text-right",
+          "text-secondary-500",
+          "text-secondary-600",
+          "text-secondary-900",
+          "text-sm",
+          "text-success-600",
+          "w-full"
+        ],
+        "responsive": true,
+        "darkMode": false,
+        "animations": []
+      },
+      "examples": [],
+      "relatedComponents": [
+        "Header",
+        "ProductList",
+        "Modal",
+        "Button"
+      ]
+    },
+    {
+      "id": "molecules-modal",
+      "name": "Modal",
+      "category": "molecules",
+      "description": "複数の要素を組み合わせた「Modal」コンポーネント。フレックスボックスレイアウトを使用、ホバー効果あり、レスポンシブ対応。",
+      "usage": "<Modal isOpen={{}} onClose={{}} title={{}} children={{}} />",
+      "props": [
+        {
+          "name": "isOpen",
+          "type": "any",
+          "required": true,
+          "description": "isOpenプロパティ"
+        },
+        {
+          "name": "onClose",
+          "type": "any",
+          "required": true,
+          "description": "onCloseプロパティ"
+        },
+        {
+          "name": "title",
+          "type": "any",
+          "required": true,
+          "description": "タイトルテキスト"
+        },
+        {
+          "name": "children",
+          "type": "any",
+          "required": true,
+          "description": "コンポーネントの子要素"
+        },
+        {
+          "name": "size",
+          "type": "any",
+          "required": false,
+          "defaultValue": "md",
+          "description": "コンポーネントのサイズ"
+        },
+        {
+          "name": "showCloseButton",
+          "type": "any",
+          "required": false,
+          "defaultValue": "true",
+          "description": "showCloseButtonプロパティ"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [
+          "bg-black",
+          "bg-opacity-50",
+          "bg-white",
+          "fixed",
+          "flex",
+          "focus:outline-none",
+          "focus:ring-2",
+          "focus:ring-offset-2",
+          "focus:ring-primary-500",
+          "font-semibold",
+          "h-6",
+          "hover:text-secondary-600",
+          "inset-0",
+          "min-h-screen",
+          "overflow-hidden",
+          "overflow-y-auto",
+          "p-4",
+          "relative",
+          "rounded-md",
+          "rounded-xl",
+          "shadow-xl",
+          "sm:my-8",
+          "sm:p-0",
+          "sm:p-6",
+          "sm:w-full",
+          "sr-only",
+          "text-center",
+          "text-left",
+          "text-lg",
+          "text-secondary-400",
+          "text-secondary-700",
+          "text-secondary-900",
+          "transition-all",
+          "transition-opacity",
+          "w-6",
+          "z-50"
+        ],
+        "responsive": true,
+        "darkMode": false,
+        "animations": [
+          "transition-all",
+          "transition-opacity"
+        ]
+      },
+      "examples": [],
+      "relatedComponents": [
+        "Button",
+        "FormField",
+        "Card"
+      ],
+      "jsxStructure": {
+        "type": "div",
+        "props": {},
+        "children": [
+          "{...}",
+          {
+            "type": "div",
+            "props": {
+              "onClick": "{onClose}"
+            },
+            "children": [],
+            "className": "fixed inset-0 bg-black bg-opacity-50 transition-opacity",
+            "tailwindClasses": [
+              "fixed",
+              "inset-0",
+              "bg-black",
+              "bg-opacity-50",
+              "transition-opacity"
+            ]
+          },
+          "{...}",
+          {
+            "type": "div",
+            "props": {},
+            "children": [
+              {
+                "type": "div",
+                "props": {},
+                "children": [
+                  "{...}",
+                  "{...}",
+                  "{...}",
+                  {
+                    "type": "div",
+                    "props": {},
+                    "children": [
+                      "{...}"
+                    ],
+                    "className": "text-secondary-700",
+                    "tailwindClasses": [
+                      "text-secondary-700"
+                    ]
+                  }
+                ],
+                "className": "{expression}",
+                "tailwindClasses": []
+              }
+            ],
+            "className": "flex min-h-screen items-center justify-center p-4 text-center sm:p-0",
+            "tailwindClasses": [
+              "flex",
+              "min-h-screen",
+              "p-4",
+              "text-center",
+              "sm:p-0"
+            ]
+          }
+        ],
+        "className": "fixed inset-0 z-50 overflow-y-auto",
+        "tailwindClasses": [
+          "fixed",
+          "inset-0",
+          "z-50",
+          "overflow-y-auto"
+        ]
+      }
+    },
+    {
+      "id": "molecules-formfield",
+      "name": "FormField",
+      "category": "molecules",
+      "description": "複数の要素を組み合わせた「FormField」コンポーネント。フレックスボックスレイアウトを使用。",
+      "usage": "<FormField label={{}} error={{}} helper={{}} required={{}} id={{}} />",
+      "props": [
+        {
+          "name": "label",
+          "type": "any",
+          "required": true,
+          "description": "ラベルテキスト"
+        },
+        {
+          "name": "error",
+          "type": "any",
+          "required": true,
+          "description": "エラー状態の表示"
+        },
+        {
+          "name": "helper",
+          "type": "any",
+          "required": true,
+          "description": "helperプロパティ"
+        },
+        {
+          "name": "required",
+          "type": "any",
+          "required": true,
+          "description": "requiredプロパティ"
+        },
+        {
+          "name": "id",
+          "type": "any",
+          "required": true,
+          "description": "DOM要素のID"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [
+          "block",
+          "flex",
+          "font-medium",
+          "h-4",
+          "space-y-1",
+          "text-danger-600",
+          "text-secondary-500",
+          "text-secondary-700",
+          "text-sm",
+          "w-4"
+        ],
+        "responsive": false,
+        "darkMode": false,
+        "animations": []
+      },
+      "examples": [],
+      "relatedComponents": [
+        "Input",
+        "Modal",
+        "Card"
+      ],
+      "jsxStructure": {
+        "type": "div",
+        "props": {},
+        "children": [
+          "{...}",
+          {
+            "type": "Input",
+            "props": {
+              "id": "{inputId}",
+              "error": "{expression}",
+              "required": "{required}",
+              "...spread": true
+            },
+            "children": []
+          },
+          "{...}",
+          "{...}"
+        ],
+        "className": "space-y-1",
+        "tailwindClasses": [
+          "space-y-1"
+        ]
+      }
+    },
+    {
+      "id": "molecules-card",
+      "name": "Card",
+      "category": "molecules",
+      "description": "複数の要素を組み合わせた「Card」コンポーネント。",
+      "usage": "<Card children={{}} className={{}} />",
+      "props": [
+        {
+          "name": "children",
+          "type": "any",
+          "required": true,
+          "description": "コンポーネントの子要素"
+        },
+        {
+          "name": "className",
+          "type": "any",
+          "required": true,
+          "description": "追加のCSSクラス名"
+        },
+        {
+          "name": "padding",
+          "type": "any",
+          "required": false,
+          "defaultValue": "md",
+          "description": "paddingプロパティ"
+        },
+        {
+          "name": "shadow",
+          "type": "any",
+          "required": false,
+          "defaultValue": "soft",
+          "description": "shadowプロパティ"
+        },
+        {
+          "name": "rounded",
+          "type": "any",
+          "required": false,
+          "defaultValue": "true",
+          "description": "roundedプロパティ"
+        },
+        {
+          "name": "hoverable",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "hoverableプロパティ"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [],
+        "responsive": false,
+        "darkMode": false,
+        "animations": []
+      },
+      "examples": [],
+      "relatedComponents": [
+        "Modal",
+        "FormField"
+      ],
+      "jsxStructure": {
+        "type": "div",
+        "props": {},
+        "children": [
+          "{...}"
+        ],
+        "className": "{cardClassName}",
+        "tailwindClasses": []
+      }
+    },
+    {
+      "id": "atoms-testcomponent",
+      "name": "TestComponent",
+      "category": "atoms",
+      "description": "基本的なUI要素「TestComponent」。",
+      "usage": "<TestComponent title={{}} />",
+      "props": [
+        {
+          "name": "title",
+          "type": "any",
+          "required": true,
+          "description": "タイトルテキスト"
+        },
+        {
+          "name": "count",
+          "type": "any",
+          "required": false,
+          "defaultValue": "0",
+          "description": "countプロパティ"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [
+          "bg-blue-500",
+          "bg-white",
+          "font-bold",
+          "p-4",
+          "rounded-lg",
+          "text-blue-500",
+          "text-gray-100",
+          "text-white",
+          "text-xl"
+        ],
+        "responsive": false,
+        "darkMode": false,
+        "animations": []
+      },
+      "examples": [],
+      "relatedComponents": [
+        "Input",
+        "Button",
+        "Badge"
+      ],
+      "jsxStructure": {
+        "type": "div",
+        "props": {},
+        "children": [
+          {
+            "type": "h2",
+            "props": {},
+            "children": [
+              "{...}"
+            ],
+            "className": "text-white text-xl font-bold",
+            "tailwindClasses": [
+              "text-white",
+              "text-xl",
+              "font-bold"
+            ]
+          },
+          {
+            "type": "p",
+            "props": {},
+            "children": [
+              "Count:",
+              "{...}"
+            ],
+            "className": "text-gray-100 mt-2",
+            "tailwindClasses": [
+              "text-gray-100"
+            ]
+          },
+          {
+            "type": "button",
+            "props": {},
+            "children": [
+              "Click me"
+            ],
+            "className": "bg-white text-blue-500 px-4 py-2 rounded mt-4",
+            "tailwindClasses": [
+              "bg-white",
+              "text-blue-500"
+            ]
+          }
+        ],
+        "className": "bg-blue-500 p-4 rounded-lg",
+        "tailwindClasses": [
+          "bg-blue-500",
+          "p-4",
+          "rounded-lg"
+        ]
+      }
+    },
+    {
+      "id": "atoms-input",
+      "name": "Input",
+      "category": "atoms",
+      "description": "基本的なUI要素「Input」。",
+      "usage": "<Input id={{}} name={{}} value={{}} placeholder={{}} onChange={{}} onFocus={{}} onBlur={{}} />",
+      "props": [
+        {
+          "name": "id",
+          "type": "any",
+          "required": true,
+          "description": "DOM要素のID"
+        },
+        {
+          "name": "name",
+          "type": "any",
+          "required": true,
+          "description": "フォーム要素の名前"
+        },
+        {
+          "name": "type",
+          "type": "any",
+          "required": false,
+          "defaultValue": "text",
+          "description": "インプットタイプまたはバリアント"
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "required": true,
+          "description": "コンポーネントの値"
+        },
+        {
+          "name": "placeholder",
+          "type": "any",
+          "required": true,
+          "description": "プレースホルダーテキスト"
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "コンポーネントの無効化状態"
+        },
+        {
+          "name": "required",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "requiredプロパティ"
+        },
+        {
+          "name": "error",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "エラー状態の表示"
+        },
+        {
+          "name": "size",
+          "type": "any",
+          "required": false,
+          "defaultValue": "md",
+          "description": "コンポーネントのサイズ"
+        },
+        {
+          "name": "fullWidth",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "fullWidthプロパティ"
+        },
+        {
+          "name": "onChange",
+          "type": "any",
+          "required": true,
+          "description": "値変更時のイベントハンドラ"
+        },
+        {
+          "name": "onFocus",
+          "type": "any",
+          "required": true,
+          "description": "onFocusプロパティ"
+        },
+        {
+          "name": "onBlur",
+          "type": "any",
+          "required": true,
+          "description": "onBlurプロパティ"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [],
+        "responsive": false,
+        "darkMode": false,
+        "animations": []
+      },
+      "examples": [],
+      "relatedComponents": [
+        "TestComponent",
+        "Button",
+        "Badge"
+      ],
+      "jsxStructure": {
+        "type": "input",
+        "props": {
+          "id": "{id}",
+          "name": "{name}",
+          "type": "{type}",
+          "value": "{value}",
+          "placeholder": "{placeholder}",
+          "disabled": "{disabled}",
+          "required": "{required}",
+          "onChange": "{onChange}",
+          "onFocus": "{onFocus}",
+          "onBlur": "{onBlur}"
+        },
+        "children": [],
+        "className": "{className}",
+        "tailwindClasses": []
+      }
+    },
+    {
+      "id": "atoms-button",
+      "name": "Button",
+      "category": "atoms",
+      "description": "基本的なUI要素「Button」。アニメーション効果付き。",
+      "usage": "<Button children={{}} onClick={{}} />",
+      "props": [
+        {
+          "name": "children",
+          "type": "any",
+          "required": true,
+          "description": "コンポーネントの子要素"
+        },
+        {
+          "name": "onClick",
+          "type": "any",
+          "required": true,
+          "description": "クリック時のイベントハンドラ"
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "コンポーネントの無効化状態"
+        },
+        {
+          "name": "variant",
+          "type": "any",
+          "required": false,
+          "defaultValue": "primary",
+          "description": "コンポーネントのバリアント"
+        },
+        {
+          "name": "size",
+          "type": "any",
+          "required": false,
+          "defaultValue": "md",
+          "description": "コンポーネントのサイズ"
+        },
+        {
+          "name": "fullWidth",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "fullWidthプロパティ"
+        },
+        {
+          "name": "loading",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "ローディング状態の表示"
+        },
+        {
+          "name": "type",
+          "type": "any",
+          "required": false,
+          "defaultValue": "button",
+          "description": "インプットタイプまたはバリアント"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [
+          "animate-spin",
+          "h-4",
+          "opacity-25",
+          "opacity-75",
+          "w-4"
+        ],
+        "responsive": false,
+        "darkMode": false,
+        "animations": [
+          "animate-spin"
+        ]
+      },
+      "examples": [],
+      "relatedComponents": [
+        "TestComponent",
+        "Input",
+        "Badge"
+      ],
+      "jsxStructure": {
+        "type": "button",
+        "props": {
+          "type": "{type}",
+          "onClick": "{onClick}",
+          "disabled": "{expression}"
+        },
+        "children": [
+          "{...}",
+          "{...}"
+        ],
+        "className": "{className}",
+        "tailwindClasses": []
+      }
+    },
+    {
+      "id": "atoms-badge",
+      "name": "Badge",
+      "category": "atoms",
+      "description": "基本的なUI要素「Badge」。",
+      "usage": "<Badge children={{}} />",
+      "props": [
+        {
+          "name": "children",
+          "type": "any",
+          "required": true,
+          "description": "コンポーネントの子要素"
+        },
+        {
+          "name": "variant",
+          "type": "any",
+          "required": false,
+          "defaultValue": "primary",
+          "description": "コンポーネントのバリアント"
+        },
+        {
+          "name": "size",
+          "type": "any",
+          "required": false,
+          "defaultValue": "md",
+          "description": "コンポーネントのサイズ"
+        },
+        {
+          "name": "rounded",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "roundedプロパティ"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [],
+        "responsive": false,
+        "darkMode": false,
+        "animations": []
+      },
+      "examples": [],
+      "relatedComponents": [
+        "TestComponent",
+        "Input",
+        "Button"
+      ],
+      "jsxStructure": {
+        "type": "span",
+        "props": {},
+        "children": [
+          "{...}"
+        ],
+        "className": "{className}",
+        "tailwindClasses": []
+      }
+    },
+    {
+      "id": "organisms-productlist",
+      "name": "ProductList",
+      "category": "organisms",
+      "description": "複雑な機能を持つ「ProductList」セクション。フレックスボックスレイアウトを使用、グリッドレイアウトを使用、アニメーション効果付き、ホバー効果あり、レスポンシブ対応。",
+      "usage": "<ProductList products={{}} onProductClick={{}} />",
+      "props": [
+        {
+          "name": "products",
+          "type": "any",
+          "required": true,
+          "description": "productsプロパティ"
+        },
+        {
+          "name": "loading",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "ローディング状態の表示"
+        },
+        {
+          "name": "onProductClick",
+          "type": "any",
+          "required": true,
+          "description": "onProductClickプロパティ"
+        },
+        {
+          "name": "showCategory",
+          "type": "any",
+          "required": false,
+          "defaultValue": "true",
+          "description": "showCategoryプロパティ"
+        },
+        {
+          "name": "showRating",
+          "type": "any",
+          "required": false,
+          "defaultValue": "true",
+          "description": "showRatingプロパティ"
+        },
+        {
+          "name": "gridCols",
+          "type": "any",
+          "required": false,
+          "defaultValue": "3",
+          "description": "gridColsプロパティ"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [
+          "animate-pulse",
+          "bg-secondary-100",
+          "bg-secondary-200",
+          "border-secondary-100",
+          "border-t",
+          "flex",
+          "flex-1",
+          "flex-col",
+          "font-bold",
+          "font-semibold",
+          "gap-6",
+          "grid",
+          "grid-cols-1",
+          "group-hover:opacity-75",
+          "h-4",
+          "h-48",
+          "h-full",
+          "lg:grid-cols-3",
+          "md:grid-cols-2",
+          "object-center",
+          "object-cover",
+          "overflow-hidden",
+          "rounded-lg",
+          "space-x-1",
+          "space-x-2",
+          "space-y-2",
+          "space-y-3",
+          "space-y-4",
+          "text-lg",
+          "text-secondary-500",
+          "text-secondary-600",
+          "text-secondary-900",
+          "text-sm",
+          "text-xl",
+          "w-1/2",
+          "w-3/4",
+          "w-4",
+          "w-full"
+        ],
+        "responsive": true,
+        "darkMode": false,
+        "animations": [
+          "animate-pulse"
+        ]
+      },
+      "examples": [],
+      "relatedComponents": [
+        "Card",
+        "Button",
+        "Badge",
+        "Header"
+      ],
+      "jsxStructure": {
+        "type": "div",
+        "props": {},
+        "children": [
+          "{...}"
+        ],
+        "className": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+        "tailwindClasses": [
+          "grid",
+          "grid-cols-1",
+          "md:grid-cols-2",
+          "lg:grid-cols-3",
+          "gap-6"
+        ]
+      }
+    },
+    {
+      "id": "organisms-header",
+      "name": "Header",
+      "category": "organisms",
+      "description": "複雑な機能を持つ「Header」セクション。フレックスボックスレイアウトを使用、ホバー効果あり、レスポンシブ対応。",
+      "usage": "<Header title={{}} subtitle={{}} actions={{}} navigation={{}} user={{}} />",
+      "props": [
+        {
+          "name": "title",
+          "type": "any",
+          "required": true,
+          "description": "タイトルテキスト"
+        },
+        {
+          "name": "subtitle",
+          "type": "any",
+          "required": true,
+          "description": "subtitleプロパティ"
+        },
+        {
+          "name": "actions",
+          "type": "any",
+          "required": true,
+          "description": "actionsプロパティ"
+        },
+        {
+          "name": "navigation",
+          "type": "any",
+          "required": true,
+          "description": "navigationプロパティ"
+        },
+        {
+          "name": "showNotification",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "showNotificationプロパティ"
+        },
+        {
+          "name": "notificationCount",
+          "type": "any",
+          "required": false,
+          "defaultValue": "0",
+          "description": "notificationCountプロパティ"
+        },
+        {
+          "name": "user",
+          "type": "any",
+          "required": true,
+          "description": "userプロパティ"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [
+          "absolute",
+          "bg-primary-500",
+          "bg-white",
+          "border-b",
+          "border-secondary-200",
+          "duration-200",
+          "flex",
+          "flex-shrink-0",
+          "focus:outline-none",
+          "focus:ring-2",
+          "focus:ring-offset-2",
+          "focus:ring-primary-500",
+          "font-bold",
+          "font-medium",
+          "font-normal",
+          "h-16",
+          "h-6",
+          "h-8",
+          "hidden",
+          "hover:text-secondary-600",
+          "lg:px-8",
+          "max-w-7xl",
+          "md:block",
+          "md:flex",
+          "p-2",
+          "relative",
+          "rounded-full",
+          "rounded-md",
+          "shadow-soft",
+          "sm:px-6",
+          "space-x-3",
+          "space-x-4",
+          "space-x-8",
+          "text-secondary-400",
+          "text-secondary-500",
+          "text-secondary-900",
+          "text-sm",
+          "text-white",
+          "text-xl",
+          "transition-colors",
+          "w-6",
+          "w-8"
+        ],
+        "responsive": true,
+        "darkMode": false,
+        "animations": [
+          "duration-200",
+          "transition-colors"
+        ]
+      },
+      "examples": [],
+      "relatedComponents": [
+        "Button",
+        "Badge",
+        "ProductList"
+      ],
+      "jsxStructure": {
+        "type": "header",
+        "props": {},
+        "children": [
+          {
+            "type": "div",
+            "props": {},
+            "children": [
+              {
+                "type": "div",
+                "props": {},
+                "children": [
+                  "{...}",
+                  {
+                    "type": "div",
+                    "props": {},
+                    "children": [
+                      {
+                        "type": "div",
+                        "props": {},
+                        "children": [
+                          {
+                            "type": "h1",
+                            "props": {},
+                            "children": [
+                              "{...}",
+                              "{...}"
+                            ],
+                            "className": "text-xl font-bold text-secondary-900",
+                            "tailwindClasses": [
+                              "text-xl",
+                              "font-bold",
+                              "text-secondary-900"
+                            ]
+                          }
+                        ],
+                        "className": "flex-shrink-0",
+                        "tailwindClasses": [
+                          "flex-shrink-0"
+                        ]
+                      },
+                      "{...}"
+                    ],
+                    "className": "flex items-center space-x-8",
+                    "tailwindClasses": [
+                      "flex",
+                      "space-x-8"
+                    ]
+                  },
+                  "{...}",
+                  {
+                    "type": "div",
+                    "props": {},
+                    "children": [
+                      "{...}",
+                      "{...}",
+                      "{...}"
+                    ],
+                    "className": "flex items-center space-x-4",
+                    "tailwindClasses": [
+                      "flex",
+                      "space-x-4"
+                    ]
+                  }
+                ],
+                "className": "flex justify-between items-center h-16",
+                "tailwindClasses": [
+                  "flex",
+                  "h-16"
+                ]
+              }
+            ],
+            "className": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            "tailwindClasses": [
+              "max-w-7xl",
+              "sm:px-6",
+              "lg:px-8"
+            ]
+          }
+        ],
+        "className": "bg-white border-b border-secondary-200 shadow-soft",
+        "tailwindClasses": [
+          "bg-white",
+          "border-b",
+          "border-secondary-200",
+          "shadow-soft"
+        ]
+      }
+    }
+  ],
+  "patterns": [
+    {
+      "name": "カードシステム",
+      "description": "コンテンツを整理して表示するためのカードコンポーネントパターン。",
+      "components": [
+        "Card"
+      ],
+      "example": "// カード使用例\n<Card>\n  <CardHeader title=\"タイトル\" />\n  <CardBody>\n    <p>カードのコンテンツ</p>\n  </CardBody>\n  <CardFooter>\n    <Button>アクション</Button>\n  </CardFooter>\n</Card>"
+    }
+  ],
+  "guidelines": [
+    "カラーパレット: 50色のカラートークンが定義されています。プライマリカラーやセカンダリカラーを一貫して使用してください。",
+    "スペーシング: 3種類のスペーシングトークンが利用可能です。一貫した余白を保つため、定義されたスペーシング値を使用してください。",
+    "レスポンシブデザイン: 4個のコンポーネントがレスポンシブ対応しています。モバイルファーストのアプローチを維持してください。",
+    "コンポーネント構成: Atoms(4), Molecules(3), Organisms(2)。Atomic Designの原則に従ってコンポーネントを構築してください。"
+  ]
+}

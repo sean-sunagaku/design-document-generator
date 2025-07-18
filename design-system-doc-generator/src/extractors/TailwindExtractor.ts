@@ -2,7 +2,7 @@ const tsEslint = require('@typescript-eslint/typescript-estree');
 const { parseAndGenerateServices } = tsEslint;
 import * as fs from 'fs';
 import * as path from 'path';
-import { ExtractedComponent, ExtractorConfig, PropInfo } from '../types';
+import { ExtractedComponent, ExtractorConfig, PropInfo, JSXElement } from '../types';
 import { generateHash } from '../utils/hash';
 
 export class TailwindExtractor {
@@ -53,6 +53,7 @@ export class TailwindExtractor {
       const props: PropInfo[] = [];
       const dependencies = new Set<string>();
       const componentName = this.extractComponentName(ast, filePath);
+      let jsxStructure: JSXElement | undefined;
 
       if (!componentName) {
         return null;
@@ -62,6 +63,11 @@ export class TailwindExtractor {
         onClassName: (className) => this.extractClasses(className, classes),
         onProp: (prop) => props.push(prop),
         onImport: (dep) => dependencies.add(dep),
+        onJSXReturn: (element) => {
+          if (!jsxStructure) {
+            jsxStructure = element;
+          }
+        },
       });
 
       return {
@@ -72,6 +78,7 @@ export class TailwindExtractor {
         props,
         dependencies: Array.from(dependencies),
         hash: generateHash(content),
+        jsxStructure,
       };
     } catch (error) {
       console.error(`Failed to extract from ${filePath}:`, error);
@@ -81,7 +88,7 @@ export class TailwindExtractor {
 
   private isComponentFile(content: string, filePath: string): boolean {
     // Check if file exports a React component
-    const hasJSX = /<[A-Z][a-zA-Z0-9]*/.test(content);
+    const hasJSX = /<[a-zA-Z][a-zA-Z0-9]*/.test(content);
     const hasReactImport = /import\s+.*\s+from\s+['"]react['"]/.test(content);
     const hasExport = /export\s+(default\s+)?(function|const|class)/.test(content);
     
@@ -126,9 +133,12 @@ export class TailwindExtractor {
       onClassName: (node: any) => void;
       onProp: (prop: PropInfo) => void;
       onImport: (dep: string) => void;
+      onJSXReturn?: (element: JSXElement) => void;
     }
   ) {
-    const visit = (node: any) => {
+    let inComponentBody = false;
+    
+    const visit = (node: any, parent?: any) => {
       if (!node || typeof node !== 'object') return;
 
       // Extract className props
@@ -154,6 +164,7 @@ export class TailwindExtractor {
             }
           });
         }
+        inComponentBody = true;
       }
 
       // Extract imports
@@ -161,15 +172,29 @@ export class TailwindExtractor {
         callbacks.onImport(node.source.value);
       }
 
+      // Extract JSX structure from return statements
+      if (inComponentBody && node.type === 'ReturnStatement' && node.argument && 
+          callbacks.onJSXReturn && this.isJSXElement(node.argument)) {
+        const jsxElement = this.extractJSXStructure(node.argument);
+        if (jsxElement) {
+          callbacks.onJSXReturn(jsxElement);
+        }
+      }
+
       // Recursively visit all properties
       for (const key in node) {
         if (key !== 'parent' && node[key]) {
           if (Array.isArray(node[key])) {
-            node[key].forEach(visit);
+            node[key].forEach((child: any) => visit(child, node));
           } else if (typeof node[key] === 'object') {
-            visit(node[key]);
+            visit(node[key], node);
           }
         }
+      }
+
+      // Reset component body flag when leaving function
+      if (node.type === 'FunctionDeclaration' || node.type === 'ArrowFunctionExpression') {
+        inComponentBody = false;
       }
     };
 
@@ -283,5 +308,161 @@ export class TailwindExtractor {
       return node.name;
     }
     return undefined;
+  }
+
+  private isJSXElement(node: any): boolean {
+    return node && (
+      node.type === 'JSXElement' || 
+      node.type === 'JSXFragment' ||
+      (node.type === 'JSXExpressionContainer' && this.isJSXElement(node.expression)) ||
+      (node.type === 'ConditionalExpression' && 
+        (this.isJSXElement(node.consequent) || this.isJSXElement(node.alternate))) ||
+      (node.type === 'LogicalExpression' && this.isJSXElement(node.right))
+    );
+  }
+
+  private extractJSXStructure(node: any): JSXElement | null {
+    if (!node) return null;
+
+    // Handle JSX Expression containers
+    if (node.type === 'JSXExpressionContainer') {
+      return this.extractJSXStructure(node.expression);
+    }
+
+    // Handle conditional expressions
+    if (node.type === 'ConditionalExpression') {
+      // For now, extract the consequent (true branch)
+      return this.extractJSXStructure(node.consequent);
+    }
+
+    // Handle logical expressions (e.g., condition && <Component />)
+    if (node.type === 'LogicalExpression') {
+      return this.extractJSXStructure(node.right);
+    }
+
+    // Handle JSX Fragment
+    if (node.type === 'JSXFragment') {
+      return {
+        type: 'Fragment',
+        props: {},
+        children: this.extractJSXChildren(node.children),
+      };
+    }
+
+    // Handle JSX Element
+    if (node.type === 'JSXElement') {
+      const element: JSXElement = {
+        type: this.getJSXElementType(node.openingElement),
+        props: {},
+        children: [],
+      };
+
+      // Extract props including className
+      const { props, className, tailwindClasses } = this.extractJSXProps(node.openingElement.attributes);
+      element.props = props;
+      if (className) {
+        element.className = className;
+        element.tailwindClasses = tailwindClasses;
+      }
+
+      // Extract children
+      if (node.children && node.children.length > 0) {
+        element.children = this.extractJSXChildren(node.children);
+      }
+
+      return element;
+    }
+
+    return null;
+  }
+
+  private getJSXElementType(openingElement: any): string {
+    if (openingElement.name.type === 'JSXIdentifier') {
+      return openingElement.name.name;
+    } else if (openingElement.name.type === 'JSXMemberExpression') {
+      // Handle things like <Component.Item>
+      const parts = [];
+      let current = openingElement.name;
+      while (current.type === 'JSXMemberExpression') {
+        parts.unshift(current.property.name);
+        current = current.object;
+      }
+      if (current.type === 'JSXIdentifier') {
+        parts.unshift(current.name);
+      }
+      return parts.join('.');
+    }
+    return 'Unknown';
+  }
+
+  private extractJSXProps(attributes: any[]): { 
+    props: Record<string, any>, 
+    className?: string, 
+    tailwindClasses?: string[] 
+  } {
+    const props: Record<string, any> = {};
+    let className: string | undefined;
+    let tailwindClasses: string[] = [];
+
+    if (!attributes) return { props };
+
+    attributes.forEach((attr: any) => {
+      if (attr.type === 'JSXAttribute') {
+        const propName = attr.name.name;
+        
+        if (propName === 'className') {
+          const classValue = this.extractAttributeValue(attr.value);
+          if (typeof classValue === 'string') {
+            className = classValue;
+            tailwindClasses = classValue.split(/\s+/)
+              .filter(cls => this.isTailwindClass(cls));
+          }
+        } else {
+          props[propName] = this.extractAttributeValue(attr.value);
+        }
+      } else if (attr.type === 'JSXSpreadAttribute') {
+        props['...spread'] = true;
+      }
+    });
+
+    return { props, className, tailwindClasses };
+  }
+
+  private extractAttributeValue(value: any): any {
+    if (!value) return true; // Attribute without value (e.g., <input disabled />)
+    
+    if (value.type === 'Literal') {
+      return value.value;
+    } else if (value.type === 'JSXExpressionContainer') {
+      // For complex expressions, just indicate it's an expression
+      if (value.expression.type === 'Literal') {
+        return value.expression.value;
+      } else if (value.expression.type === 'Identifier') {
+        return `{${value.expression.name}}`;
+      } else {
+        return '{expression}';
+      }
+    }
+    
+    return null;
+  }
+
+  private extractJSXChildren(children: any[]): (JSXElement | string)[] {
+    if (!children) return [];
+
+    return children
+      .map((child: any) => {
+        if (child.type === 'JSXText') {
+          const text = child.value.trim();
+          return text || null;
+        } else if (child.type === 'JSXElement' || child.type === 'JSXFragment') {
+          return this.extractJSXStructure(child);
+        } else if (child.type === 'JSXExpressionContainer') {
+          // For expressions in children, we'll just indicate it's dynamic content
+          return '{...}';
+        }
+        return null;
+      })
+      .filter((child): child is JSXElement | string => child !== null);
   }
 }

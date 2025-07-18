@@ -2,6 +2,12 @@ import { TailwindExtractor } from '../../extractors/TailwindExtractor';
 import * as fs from 'fs';
 import * as path from 'path';
 
+// Mock TypeScript ESLint
+const mockParseAndGenerateServices = jest.fn();
+jest.mock('@typescript-eslint/typescript-estree', () => ({
+  parseAndGenerateServices: mockParseAndGenerateServices,
+}));
+
 // Mock fs
 jest.mock('fs', () => ({
   promises: {
@@ -21,6 +27,24 @@ describe('TailwindExtractor', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  beforeEach(() => {
+    // Mock AST structure
+    const mockAst = {
+      type: 'Program',
+      body: [
+        {
+          type: 'ExportDefaultDeclaration',
+          declaration: {
+            type: 'FunctionDeclaration',
+            id: { name: 'TestComponent' }
+          }
+        }
+      ]
+    };
+
+    mockParseAndGenerateServices.mockReturnValue({ ast: mockAst });
   });
 
   describe('extractFromFile', () => {

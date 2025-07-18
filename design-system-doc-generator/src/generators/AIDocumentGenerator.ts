@@ -30,6 +30,7 @@ export interface ComponentDoc {
   styles: StyleInfo;
   examples: CodeExample[];
   relatedComponents: string[];
+  jsxStructure?: any; // JSXElement type from types/index.ts
 }
 
 export interface PropDoc {
@@ -137,6 +138,7 @@ export class AIDocumentGenerator {
       examples: options.includeExamples ? 
         await this.generateExamples(component) : [],
       relatedComponents: this.findRelatedComponents(component, allComponents),
+      jsxStructure: component.jsxStructure,
     };
   }
 

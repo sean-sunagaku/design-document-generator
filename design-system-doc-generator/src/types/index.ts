@@ -6,6 +6,15 @@ export interface ExtractedComponent {
   props: PropInfo[];
   dependencies: string[];
   hash: string;
+  jsxStructure?: JSXElement;
+}
+
+export interface JSXElement {
+  type: string;
+  props: Record<string, any>;
+  className?: string;
+  tailwindClasses?: string[];
+  children?: (JSXElement | string)[];
 }
 
 export interface PropInfo {

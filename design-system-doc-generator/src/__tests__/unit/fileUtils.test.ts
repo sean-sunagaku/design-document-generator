@@ -27,6 +27,8 @@ jest.mock('glob', () => ({
   glob: jest.fn(),
 }));
 
+const mockGlob = glob as jest.MockedFunction<typeof glob>;
+
 // Mock path
 jest.mock('path', () => ({
   dirname: jest.fn(),
@@ -120,7 +122,7 @@ describe('fileUtils', () => {
   describe('findFiles', () => {
     it('should find files matching pattern', async () => {
       const mockFiles = ['/test/file1.tsx', '/test/file2.tsx'];
-      (glob as jest.Mock).mockResolvedValue(mockFiles);
+      mockGlob.mockResolvedValue(mockFiles);
 
       const result = await findFiles('**/*.tsx');
 
@@ -131,7 +133,7 @@ describe('fileUtils', () => {
     it('should pass options to glob', async () => {
       const mockFiles = ['/test/file1.tsx'];
       const options = { ignore: ['**/*.test.tsx'] };
-      (glob as jest.Mock).mockResolvedValue(mockFiles);
+      mockGlob.mockResolvedValue(mockFiles);
 
       const result = await findFiles('**/*.tsx', options);
 
