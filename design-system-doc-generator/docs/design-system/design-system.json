@@ -1,0 +1,456 @@
+{
+  "version": "1.0.0",
+  "generated": "2025-07-18T15:28:59.563Z",
+  "project": {
+    "name": "design-system-doc-generator",
+    "version": "1.0.0",
+    "framework": "react",
+    "styling": "tailwindcss"
+  },
+  "tokens": {
+    "colors": {},
+    "spacing": {},
+    "typography": {
+      "fontFamily": {},
+      "fontSize": {},
+      "fontWeight": {},
+      "lineHeight": {}
+    },
+    "breakpoints": {
+      "sm": "640px",
+      "md": "768px",
+      "lg": "1024px",
+      "xl": "1280px",
+      "2xl": "1536px"
+    },
+    "shadows": {},
+    "borderRadius": {},
+    "custom": {}
+  },
+  "components": [
+    {
+      "id": "pages-homepage",
+      "name": "HomePage",
+      "category": "pages",
+      "description": "完全なページコンポーネント「HomePage」。フレックスボックスレイアウトを使用、レスポンシブ対応。",
+      "usage": "<HomePage />",
+      "props": [],
+      "styles": {
+        "tailwindClasses": [
+          "bg-secondary-100",
+          "bg-secondary-50",
+          "flex",
+          "font-bold",
+          "font-medium",
+          "h-full",
+          "lg:px-8",
+          "max-w-7xl",
+          "min-h-screen",
+          "object-center",
+          "object-cover",
+          "overflow-hidden",
+          "rounded-lg",
+          "sm:px-6",
+          "space-x-2",
+          "space-x-3",
+          "space-y-4",
+          "space-y-6",
+          "text-2xl",
+          "text-3xl",
+          "text-danger-600",
+          "text-lg",
+          "text-right",
+          "text-secondary-500",
+          "text-secondary-600",
+          "text-secondary-900",
+          "text-sm",
+          "text-success-600",
+          "w-full"
+        ],
+        "responsive": true,
+        "darkMode": false,
+        "animations": []
+      },
+      "examples": [],
+      "relatedComponents": [
+        "Header",
+        "ProductList"
+      ]
+    },
+    {
+      "id": "organisms-productlist",
+      "name": "ProductList",
+      "category": "organisms",
+      "description": "複雑な機能を持つ「ProductList」セクション。フレックスボックスレイアウトを使用、グリッドレイアウトを使用、アニメーション効果付き、ホバー効果あり、レスポンシブ対応。",
+      "usage": "<ProductList products={{}} onProductClick={{}} />",
+      "props": [
+        {
+          "name": "products",
+          "type": "any",
+          "required": true,
+          "description": "productsプロパティ"
+        },
+        {
+          "name": "loading",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "ローディング状態の表示"
+        },
+        {
+          "name": "onProductClick",
+          "type": "any",
+          "required": true,
+          "description": "onProductClickプロパティ"
+        },
+        {
+          "name": "showCategory",
+          "type": "any",
+          "required": false,
+          "defaultValue": "true",
+          "description": "showCategoryプロパティ"
+        },
+        {
+          "name": "showRating",
+          "type": "any",
+          "required": false,
+          "defaultValue": "true",
+          "description": "showRatingプロパティ"
+        },
+        {
+          "name": "gridCols",
+          "type": "any",
+          "required": false,
+          "defaultValue": "3",
+          "description": "gridColsプロパティ"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [
+          "animate-pulse",
+          "bg-secondary-100",
+          "bg-secondary-200",
+          "border-secondary-100",
+          "border-t",
+          "flex",
+          "flex-1",
+          "flex-col",
+          "font-bold",
+          "font-semibold",
+          "gap-6",
+          "grid",
+          "grid-cols-1",
+          "group-hover:opacity-75",
+          "h-4",
+          "h-48",
+          "h-full",
+          "lg:grid-cols-3",
+          "md:grid-cols-2",
+          "object-center",
+          "object-cover",
+          "overflow-hidden",
+          "rounded-lg",
+          "space-x-1",
+          "space-x-2",
+          "space-y-2",
+          "space-y-3",
+          "space-y-4",
+          "text-lg",
+          "text-secondary-500",
+          "text-secondary-600",
+          "text-secondary-900",
+          "text-sm",
+          "text-xl",
+          "w-1/2",
+          "w-3/4",
+          "w-4",
+          "w-full"
+        ],
+        "responsive": true,
+        "darkMode": false,
+        "animations": [
+          "animate-pulse"
+        ]
+      },
+      "examples": [],
+      "relatedComponents": [
+        "Header"
+      ]
+    },
+    {
+      "id": "organisms-header",
+      "name": "Header",
+      "category": "organisms",
+      "description": "複雑な機能を持つ「Header」セクション。フレックスボックスレイアウトを使用、ホバー効果あり、レスポンシブ対応。",
+      "usage": "<Header title={{}} subtitle={{}} actions={{}} navigation={{}} user={{}} />",
+      "props": [
+        {
+          "name": "title",
+          "type": "any",
+          "required": true,
+          "description": "タイトルテキスト"
+        },
+        {
+          "name": "subtitle",
+          "type": "any",
+          "required": true,
+          "description": "subtitleプロパティ"
+        },
+        {
+          "name": "actions",
+          "type": "any",
+          "required": true,
+          "description": "actionsプロパティ"
+        },
+        {
+          "name": "navigation",
+          "type": "any",
+          "required": true,
+          "description": "navigationプロパティ"
+        },
+        {
+          "name": "showNotification",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "showNotificationプロパティ"
+        },
+        {
+          "name": "notificationCount",
+          "type": "any",
+          "required": false,
+          "defaultValue": "0",
+          "description": "notificationCountプロパティ"
+        },
+        {
+          "name": "user",
+          "type": "any",
+          "required": true,
+          "description": "userプロパティ"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [
+          "absolute",
+          "bg-primary-500",
+          "bg-white",
+          "border-b",
+          "border-secondary-200",
+          "duration-200",
+          "flex",
+          "flex-shrink-0",
+          "focus:outline-none",
+          "focus:ring-2",
+          "focus:ring-offset-2",
+          "focus:ring-primary-500",
+          "font-bold",
+          "font-medium",
+          "font-normal",
+          "h-16",
+          "h-6",
+          "h-8",
+          "hidden",
+          "hover:text-secondary-600",
+          "lg:px-8",
+          "max-w-7xl",
+          "md:block",
+          "md:flex",
+          "p-2",
+          "relative",
+          "rounded-full",
+          "rounded-md",
+          "shadow-soft",
+          "sm:px-6",
+          "space-x-3",
+          "space-x-4",
+          "space-x-8",
+          "text-secondary-400",
+          "text-secondary-500",
+          "text-secondary-900",
+          "text-sm",
+          "text-white",
+          "text-xl",
+          "transition-colors",
+          "w-6",
+          "w-8"
+        ],
+        "responsive": true,
+        "darkMode": false,
+        "animations": [
+          "duration-200",
+          "transition-colors"
+        ]
+      },
+      "examples": [],
+      "relatedComponents": [
+        "ProductList"
+      ]
+    },
+    {
+      "id": "molecules-formfield",
+      "name": "FormField",
+      "category": "molecules",
+      "description": "複数の要素を組み合わせた「FormField」コンポーネント。フレックスボックスレイアウトを使用。",
+      "usage": "<FormField label={{}} error={{}} helper={{}} required={{}} id={{}} />",
+      "props": [
+        {
+          "name": "label",
+          "type": "any",
+          "required": true,
+          "description": "ラベルテキスト"
+        },
+        {
+          "name": "error",
+          "type": "any",
+          "required": true,
+          "description": "エラー状態の表示"
+        },
+        {
+          "name": "helper",
+          "type": "any",
+          "required": true,
+          "description": "helperプロパティ"
+        },
+        {
+          "name": "required",
+          "type": "any",
+          "required": true,
+          "description": "requiredプロパティ"
+        },
+        {
+          "name": "id",
+          "type": "any",
+          "required": true,
+          "description": "DOM要素のID"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [
+          "block",
+          "flex",
+          "font-medium",
+          "h-4",
+          "space-y-1",
+          "text-danger-600",
+          "text-secondary-500",
+          "text-secondary-700",
+          "text-sm",
+          "w-4"
+        ],
+        "responsive": false,
+        "darkMode": false,
+        "animations": []
+      },
+      "examples": [],
+      "relatedComponents": [
+        "Input"
+      ]
+    },
+    {
+      "id": "atoms-input",
+      "name": "Input",
+      "category": "atoms",
+      "description": "基本的なUI要素「Input」。",
+      "usage": "<Input id={{}} name={{}} value={{}} placeholder={{}} onChange={{}} onFocus={{}} onBlur={{}} />",
+      "props": [
+        {
+          "name": "id",
+          "type": "any",
+          "required": true,
+          "description": "DOM要素のID"
+        },
+        {
+          "name": "name",
+          "type": "any",
+          "required": true,
+          "description": "フォーム要素の名前"
+        },
+        {
+          "name": "type",
+          "type": "any",
+          "required": false,
+          "defaultValue": "text",
+          "description": "インプットタイプまたはバリアント"
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "required": true,
+          "description": "コンポーネントの値"
+        },
+        {
+          "name": "placeholder",
+          "type": "any",
+          "required": true,
+          "description": "プレースホルダーテキスト"
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "コンポーネントの無効化状態"
+        },
+        {
+          "name": "required",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "requiredプロパティ"
+        },
+        {
+          "name": "error",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "エラー状態の表示"
+        },
+        {
+          "name": "size",
+          "type": "any",
+          "required": false,
+          "defaultValue": "md",
+          "description": "コンポーネントのサイズ"
+        },
+        {
+          "name": "fullWidth",
+          "type": "any",
+          "required": false,
+          "defaultValue": "false",
+          "description": "fullWidthプロパティ"
+        },
+        {
+          "name": "onChange",
+          "type": "any",
+          "required": true,
+          "description": "値変更時のイベントハンドラ"
+        },
+        {
+          "name": "onFocus",
+          "type": "any",
+          "required": true,
+          "description": "onFocusプロパティ"
+        },
+        {
+          "name": "onBlur",
+          "type": "any",
+          "required": true,
+          "description": "onBlurプロパティ"
+        }
+      ],
+      "styles": {
+        "tailwindClasses": [],
+        "responsive": false,
+        "darkMode": false,
+        "animations": []
+      },
+      "examples": [],
+      "relatedComponents": []
+    }
+  ],
+  "patterns": [],
+  "guidelines": [
+    "レスポンシブデザイン: 3個のコンポーネントがレスポンシブ対応しています。モバイルファーストのアプローチを維持してください。",
+    "コンポーネント構成: Atoms(1), Molecules(1), Organisms(2)。Atomic Designの原則に従ってコンポーネントを構築してください。"
+  ]
+}

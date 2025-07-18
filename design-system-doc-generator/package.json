@@ -1,0 +1,82 @@
+{
+  "name": "design-system-doc-generator",
+  "version": "1.0.0",
+  "description": "React/TypeScript プロジェクトのデザインシステムを自動的にドキュメント化するツール",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "design-system-doc": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf dist",
+    "dev": "ts-node src/cli.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "prepublishOnly": "npm run build && npm test",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "design-system",
+    "documentation",
+    "tailwind",
+    "react",
+    "typescript",
+    "cli",
+    "automation"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/design-system-doc-generator"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/design-system-doc-generator/issues"
+  },
+  "homepage": "https://github.com/yourusername/design-system-doc-generator#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "chokidar": "^3.5.3",
+    "commander": "^11.1.0",
+    "glob": "^10.3.10",
+    "inquirer": "^8.2.6",
+    "jsondiffpatch": "^0.6.0",
+    "json-stable-stringify": "^1.1.0",
+    "lodash": "^4.17.21",
+    "ora": "^5.4.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "@typescript-eslint/typescript-estree": "^6.18.1",
+    "@babel/parser": "^7.23.6",
+    "@babel/traverse": "^7.23.7"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/inquirer": "^9.0.7",
+    "@types/jest": "^29.5.11",
+    "@types/lodash": "^4.14.202",
+    "@types/node": "^20.10.7",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "eslint": "^8.56.0",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
