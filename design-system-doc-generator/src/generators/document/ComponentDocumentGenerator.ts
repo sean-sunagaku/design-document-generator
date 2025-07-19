@@ -22,6 +22,7 @@ export class ComponentDocumentGenerator {
       usage: this.generateUsageInstructions(component),
       props: component.props.map(prop => this.convertPropToDoc(prop, component)),
       styles: {
+        type: 'tailwind',
         tailwindClasses: component.tailwindClasses,
         responsive: this.hasResponsiveClasses(component.tailwindClasses),
         darkMode: this.hasDarkModeClasses(component.tailwindClasses),

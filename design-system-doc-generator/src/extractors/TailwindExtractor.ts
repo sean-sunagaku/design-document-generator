@@ -1,4 +1,4 @@
-import { ExtractedComponent, ExtractorConfig, PropInfo, JSXElement } from '../types';
+import { ExtractedComponent, ExtractorConfig, PropInfo, JSXElement, StyleInfo } from '../types';
 import { generateHash } from '../utils/hash';
 import { ComponentAnalyzer } from './ast/ComponentAnalyzer';
 import { ASTTraverser } from './ast/ASTTraverser';
@@ -6,6 +6,7 @@ import { TailwindClassExtractor } from './ast/TailwindClassExtractor';
 import { PropExtractor } from './ast/PropExtractor';
 import { JSXStructureExtractor } from './ast/JSXStructureExtractor';
 import { ComponentCategorizer } from './ast/ComponentCategorizer';
+import { StyleExtractorFactory } from './StyleExtractorFactory';
 
 export class TailwindExtractor {
   private config: ExtractorConfig;
@@ -15,6 +16,7 @@ export class TailwindExtractor {
   private propExtractor: PropExtractor;
   private jsxExtractor: JSXStructureExtractor;
   private categorizer: ComponentCategorizer;
+  private styleExtractor: any; // StyleExtractor
 
   constructor(config: ExtractorConfig) {
     this.config = config;
@@ -24,6 +26,9 @@ export class TailwindExtractor {
     this.propExtractor = new PropExtractor();
     this.jsxExtractor = new JSXStructureExtractor();
     this.categorizer = new ComponentCategorizer();
+    
+    // デフォルトでTailwindStyleExtractorを使用
+    this.styleExtractor = StyleExtractorFactory.createExtractor('tailwind', config);
   }
 
   async extractFromFile(filePath: string): Promise<ExtractedComponent | null> {
@@ -69,6 +74,19 @@ export class TailwindExtractor {
         this.config.sourceDir
       );
 
+      // 新しいスタイル抽出システムを使用
+      const extractedStyles = this.extractStylesFromAST(ast);
+      const styleInfo: StyleInfo = {
+        type: 'tailwind',
+        tailwindClasses: Array.from(classes).sort(),
+        classes: Array.from(classes).sort(),
+        styles: {},
+        imports: [],
+        responsive: this.hasResponsiveClasses(Array.from(classes)),
+        darkMode: this.hasDarkModeClasses(Array.from(classes)),
+        animations: this.extractAnimations(Array.from(classes))
+      };
+
       return {
         filePath,
         componentName,
@@ -78,10 +96,40 @@ export class TailwindExtractor {
         dependencies: Array.from(dependencies),
         hash: generateHash(content),
         jsxStructure,
+        platform: 'web',
+        styleInfo,
       };
     } catch (error) {
       console.error(`Failed to extract from ${filePath}:`, error);
       return null;
     }
+  }
+
+  private extractStylesFromAST(ast: any): any[] {
+    const styles: any[] = [];
+    this.astTraverser.traverse(ast, {
+      onClassName: (node) => {
+        const extractedStyles = this.styleExtractor.extractStyles(node);
+        styles.push(...extractedStyles);
+      }
+    });
+    return styles;
+  }
+
+  private hasResponsiveClasses(classes: string[]): boolean {
+    return classes.some(cls => /^(sm:|md:|lg:|xl:|2xl:)/.test(cls));
+  }
+
+  private hasDarkModeClasses(classes: string[]): boolean {
+    return classes.some(cls => cls.startsWith('dark:'));
+  }
+
+  private extractAnimations(classes: string[]): string[] {
+    return classes.filter(cls => 
+      cls.startsWith('animate-') || 
+      cls.startsWith('transition-') ||
+      cls.includes('duration-') ||
+      cls.includes('ease-')
+    );
   }
 }

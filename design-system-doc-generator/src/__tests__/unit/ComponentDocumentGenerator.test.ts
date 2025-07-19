@@ -72,9 +72,10 @@ describe('ComponentDocumentGenerator', () => {
         outputFormat: 'json'
       });
 
-      expect(doc.examples).toHaveLength(2);
+      expect(doc.examples).toHaveLength(3); // Tailwindクラス検証が追加されているため
       expect(doc.examples[0].title).toBe('基本的な使用方法');
       expect(doc.examples[1].title).toBe('全プロパティを使用した例');
+      expect(doc.examples[2].title).toBe('Tailwindクラス検証');
       expect(doc.examples[0].code).toContain('import { Button }');
       expect(doc.examples[0].code).toContain('<Button');
     });

@@ -251,7 +251,7 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate(components, tokens, options);
 
-      const buttonDoc = result.components.find(c => c.name === 'Button');
+      const buttonDoc = result.document.components.find(c => c.name === 'Button');
       expect(buttonDoc?.relatedComponents).toContain('PrimaryButton');
       expect(buttonDoc?.relatedComponents).toContain('SecondaryButton');
       expect(buttonDoc?.relatedComponents).not.toContain('Card');
@@ -298,6 +298,7 @@ describe('AIDocumentGenerator', () => {
               { name: 'onClick', type: '() => void', required: false, description: 'Click handler' },
             ],
             styles: {
+              type: 'tailwind' as const,
               tailwindClasses: ['px-4', 'py-2'],
               responsive: false,
               darkMode: false,

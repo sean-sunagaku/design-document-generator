@@ -3,9 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // Mock TypeScript ESLint
-const mockParseAndGenerateServices = jest.fn();
 jest.mock('@typescript-eslint/typescript-estree', () => ({
-  parseAndGenerateServices: mockParseAndGenerateServices,
+  parseAndGenerateServices: jest.fn(),
 }));
 
 // Mock fs
@@ -52,7 +51,8 @@ describe('TailwindExtractor', () => {
       ]
     };
 
-    mockParseAndGenerateServices.mockReturnValue({ ast: mockAst });
+    const { parseAndGenerateServices } = require('@typescript-eslint/typescript-estree');
+    (parseAndGenerateServices as jest.Mock).mockReturnValue({ ast: mockAst });
   });
 
   describe('extractFromFile', () => {

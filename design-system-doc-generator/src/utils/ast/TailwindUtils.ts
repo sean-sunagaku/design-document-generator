@@ -40,6 +40,29 @@ export class TailwindUtils {
   ];
 
   static isTailwindClass(className: string): boolean {
+    // 空文字やスペースのみの場合はfalse
+    if (!className || !className.trim()) {
+      return false;
+    }
+
+    // カスタムクラス（大文字始まり、特定の単語など）を除外
+    const customClassPatterns = [
+      /^[A-Z]/, // 大文字始まり（コンポーネント名など）
+      /^my-/, // my-で始まるカスタムクラス
+      /^custom-/, // custom-で始まるカスタムクラス
+      /component/i, // componentを含む
+      /style$/i, // styleで終わる
+    ];
+
+    if (customClassPatterns.some(pattern => pattern.test(className))) {
+      return false;
+    }
+
+    // 不完全なクラス（末尾がハイフンなど）を除外
+    if (className.endsWith('-') || className.endsWith('_')) {
+      return false;
+    }
+
     return TailwindUtils.TAILWIND_PATTERNS.some(pattern => pattern.test(className));
   }
 

@@ -1,0 +1,21 @@
+{
+  "name": "sample-project-react-native",
+  "version": "1.0.0",
+  "description": "React Native sample project for design system documentation",
+  "main": "src/App.tsx",
+  "scripts": {
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-native": "^0.72.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-native": "^0.72.0",
+    "typescript": "^5.0.0"
+  }
+}

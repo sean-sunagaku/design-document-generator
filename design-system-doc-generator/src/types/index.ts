@@ -7,6 +7,20 @@ export interface ExtractedComponent {
   dependencies: string[];
   hash: string;
   jsxStructure?: JSXElement;
+  platform?: Platform;
+  styleInfo?: StyleInfo;
+}
+
+export interface StyleInfo {
+  type: 'tailwind' | 'stylesheet' | 'inline' | 'styled-components';
+  tailwindClasses?: string[];
+  classes?: string[];
+  styles?: Record<string, any>;
+  imports?: string[];
+  customStyles?: string;
+  responsive?: boolean;
+  darkMode?: boolean;
+  animations?: string[];
 }
 
 export interface JSXElement {
@@ -51,6 +65,28 @@ export interface ExtractorConfig {
   sourceDir: string;
   tsConfigPath?: string;
   ignore?: string[];
+  platform?: Platform;
+}
+
+export type Platform = 'web' | 'react-native';
+
+export interface PlatformConfig {
+  platform: Platform;
+  styleSystem: StyleSystem;
+  validation?: ValidationConfig;
+  generation?: GenerationConfig;
+}
+
+export type StyleSystem = 'tailwind' | 'stylesheet' | 'styled-components';
+
+export interface ValidationConfig {
+  enabled: boolean;
+  rules?: string[];
+}
+
+export interface GenerationConfig {
+  includeNativeImports?: boolean;
+  includeStyleSheetExamples?: boolean;
 }
 
 export interface GeneratorOptions {
@@ -182,13 +218,6 @@ export interface PropDoc {
   description: string;
 }
 
-export interface StyleInfo {
-  tailwindClasses: string[];
-  customStyles?: string;
-  responsive: boolean;
-  darkMode: boolean;
-  animations: string[];
-}
 
 export interface CodeExample {
   title: string;

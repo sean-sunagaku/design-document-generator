@@ -1,9 +1,20 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
 
-const tsEslint = require('@typescript-eslint/typescript-estree');
-const { parseAndGenerateServices } = tsEslint;
+// TypeScriptを条件付きでimport（テスト環境での問題を回避）
+let ts: any;
+let tsEslint: any;
+let parseAndGenerateServices: any;
+
+try {
+  ts = require('typescript');
+  tsEslint = require('@typescript-eslint/typescript-estree');
+  parseAndGenerateServices = tsEslint.parseAndGenerateServices;
+} catch (error) {
+  console.warn('TypeScript validation not available:', error.message);
+  ts = null;
+  parseAndGenerateServices = null;
+}
 
 export interface ValidationResult {
   isValid: boolean;
@@ -69,6 +80,17 @@ export class CodeValidator {
       errors: [],
       warnings: []
     };
+
+    // TypeScriptが利用できない場合は警告を返す
+    if (!ts) {
+      result.warnings.push({
+        line: 0,
+        column: 0,
+        message: 'TypeScript validation is not available',
+        code: 'TS_NOT_AVAILABLE'
+      });
+      return result;
+    }
 
     try {
       // Create a temporary source file

@@ -1,6 +1,6 @@
 # デザインシステムドキュメント
 
-生成日時: 2025/7/18 8:28:59
+生成日時: 2025/7/18 17:16:11
 
 ## プロジェクト情報
 
@@ -30,143 +30,83 @@
 
 ## コンポーネント一覧
 
-
 ### Atoms
 
-#### Input
+#### Button
 
-基本的なUI要素「Input」。
+基本的なUI要素「Button」。
 
-**使用方法**: `<Input id={{}} name={{}} value={{}} placeholder={{}} onChange={{}} onFocus={{}} onBlur={{}} />`
+**使用方法**: `<Button children={{}} onClick={{}} />`
 
 **Props**:
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| id | `any` | ✓ | DOM要素のID |
-| name | `any` | ✓ | フォーム要素の名前 |
-| type | `any` | - | インプットタイプまたはバリアント |
-| value | `any` | ✓ | コンポーネントの値 |
-| placeholder | `any` | ✓ | プレースホルダーテキスト |
-| disabled | `any` | - | コンポーネントの無効化状態 |
-| required | `any` | - | requiredプロパティ |
-| error | `any` | - | エラー状態の表示 |
-| size | `any` | - | コンポーネントのサイズ |
-| fullWidth | `any` | - | fullWidthプロパティ |
-| onChange | `any` | ✓ | 値変更時のイベントハンドラ |
-| onFocus | `any` | ✓ | onFocusプロパティ |
-| onBlur | `any` | ✓ | onBlurプロパティ |
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| children | `any` | ✓ | - | コンポーネントの子要素 |
+| onClick | `any` | ✓ | - | クリック時のイベントハンドラ |
+| disabled | `any` | - | `false` | コンポーネントの無効化状態 |
+| variant | `any` | - | `primary` | コンポーネントのバリアント |
+| size | `any` | - | `md` | コンポーネントのサイズ |
 
 **スタイル情報**:
 - レスポンシブ対応: ✗
 - ダークモード対応: ✗
 
 ---
-
 
 ### Molecules
 
-#### FormField
+#### Card
 
-複数の要素を組み合わせた「FormField」コンポーネント。フレックスボックスレイアウトを使用。
+複数の要素を組み合わせた「Card」コンポーネント。
 
-**使用方法**: `<FormField label={{}} error={{}} helper={{}} required={{}} id={{}} />`
+**使用方法**: `<Card children={{}} className={{}} />`
 
 **Props**:
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| label | `any` | ✓ | ラベルテキスト |
-| error | `any` | ✓ | エラー状態の表示 |
-| helper | `any` | ✓ | helperプロパティ |
-| required | `any` | ✓ | requiredプロパティ |
-| id | `any` | ✓ | DOM要素のID |
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| children | `any` | ✓ | - | コンポーネントの子要素 |
+| className | `any` | ✓ | - | 追加のCSSクラス名 |
+| padding | `any` | - | `md` | paddingプロパティ |
+| shadow | `any` | - | `true` | shadowプロパティ |
+| rounded | `any` | - | `true` | roundedプロパティ |
 
 **スタイル情報**:
 - レスポンシブ対応: ✗
 - ダークモード対応: ✗
-
-**関連コンポーネント**: Input
-
----
-
-
-### Organisms
-
-#### ProductList
-
-複雑な機能を持つ「ProductList」セクション。フレックスボックスレイアウトを使用、グリッドレイアウトを使用、アニメーション効果付き、ホバー効果あり、レスポンシブ対応。
-
-**使用方法**: `<ProductList products={{}} onProductClick={{}} />`
-
-**Props**:
-
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| products | `any` | ✓ | productsプロパティ |
-| loading | `any` | - | ローディング状態の表示 |
-| onProductClick | `any` | ✓ | onProductClickプロパティ |
-| showCategory | `any` | - | showCategoryプロパティ |
-| showRating | `any` | - | showRatingプロパティ |
-| gridCols | `any` | - | gridColsプロパティ |
-
-**スタイル情報**:
-- レスポンシブ対応: ✓
-- ダークモード対応: ✗
-- アニメーション: animate-pulse
-
-**関連コンポーネント**: Header
+- 使用クラス: `bg-white`, `border-gray-200`, `p-4`, `p-6`, `p-8`, `rounded-lg`, `shadow-sm`
 
 ---
 
-#### Header
+## デザインパターン
 
-複雑な機能を持つ「Header」セクション。フレックスボックスレイアウトを使用、ホバー効果あり、レスポンシブ対応。
+### カードシステム
 
-**使用方法**: `<Header title={{}} subtitle={{}} actions={{}} navigation={{}} user={{}} />`
+コンテンツを整理して表示するためのカードコンポーネントパターン。
 
-**Props**:
+**使用コンポーネント**: Card
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| title | `any` | ✓ | タイトルテキスト |
-| subtitle | `any` | ✓ | subtitleプロパティ |
-| actions | `any` | ✓ | actionsプロパティ |
-| navigation | `any` | ✓ | navigationプロパティ |
-| showNotification | `any` | - | showNotificationプロパティ |
-| notificationCount | `any` | - | notificationCountプロパティ |
-| user | `any` | ✓ | userプロパティ |
+**使用例**:
 
-**スタイル情報**:
-- レスポンシブ対応: ✓
-- ダークモード対応: ✗
-- アニメーション: duration-200, transition-colors
-
-**関連コンポーネント**: ProductList
-
----
-
-
-### Pages
-
-#### HomePage
-
-完全なページコンポーネント「HomePage」。フレックスボックスレイアウトを使用、レスポンシブ対応。
-
-**使用方法**: `<HomePage />`
-
-**スタイル情報**:
-- レスポンシブ対応: ✓
-- ダークモード対応: ✗
-
-**関連コンポーネント**: Header, ProductList
-
----
-
+```tsx
+// カード使用例
+<Card>
+  <CardHeader title="タイトル" />
+  <CardBody>
+    <p>カードのコンテンツ</p>
+  </CardBody>
+  <CardFooter>
+    <Button>アクション</Button>
+  </CardFooter>
+</Card>
+```
 
 ## ガイドライン
 
-1. レスポンシブデザイン: 3個のコンポーネントがレスポンシブ対応しています。モバイルファーストのアプローチを維持してください。
+1. コンポーネント構成: Atoms(1), Molecules(1), Organisms(0), Templates(0), Pages(0)。Atomic Designの原則に従ってコンポーネントを構築してください。
 
-2. コンポーネント構成: Atoms(1), Molecules(1), Organisms(2)。Atomic Designの原則に従ってコンポーネントを構築してください。
+2. アクセシビリティ: インタラクティブな要素には適切なfocus状態を提供し、キーボードナビゲーションを考慮してください。
+
+3. フォーカススタイル: 一部のインタラクティブコンポーネントにfocus状態が定義されていません。全てのインタラクティブ要素にfocus状態を追加してください。
 

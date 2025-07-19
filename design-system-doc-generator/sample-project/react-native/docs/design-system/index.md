@@ -10,19 +10,19 @@ This directory contains automatically generated documentation for the project's 
 
 ## Summary
 
-- **Project**: design-system-doc-generator
-- **Generated**: 2025/7/18 17:16:11
-- **Components**: 2
+- **Project**: sample-project-react-native
+- **Generated**: 2025/7/18 17:16:38
+- **Components**: 8
 - **Design Tokens**: 0 colors, 0 spacing
 - **Patterns**: 1
 
 ## Component Categories
 
-- **Atoms**: 1
-- **Molecules**: 1
-- **Organisms**: 0
+- **Atoms**: 3
+- **Molecules**: 2
+- **Organisms**: 2
 - **Templates**: 0
-- **Pages**: 0
+- **Pages**: 1
 
 ## How to Use
 

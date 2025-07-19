@@ -2,9 +2,8 @@ import { ComponentAnalyzer } from '../../extractors/ast/ComponentAnalyzer';
 import * as fs from 'fs';
 
 // Mock TypeScript ESLint
-const mockParseAndGenerateServices = jest.fn();
 jest.mock('@typescript-eslint/typescript-estree', () => ({
-  parseAndGenerateServices: mockParseAndGenerateServices,
+  parseAndGenerateServices: jest.fn(),
 }));
 
 // Mock fs
@@ -49,7 +48,8 @@ describe('ComponentAnalyzer', () => {
       };
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
-      mockParseAndGenerateServices.mockReturnValue({ ast: mockAst });
+      const { parseAndGenerateServices } = require('@typescript-eslint/typescript-estree');
+      (parseAndGenerateServices as jest.Mock).mockReturnValue({ ast: mockAst });
 
       const result = await analyzer.analyzeFile('/test/Button.tsx');
 
@@ -99,7 +99,8 @@ describe('ComponentAnalyzer', () => {
       };
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
-      mockParseAndGenerateServices.mockReturnValue({ ast: mockAst });
+      const { parseAndGenerateServices } = require('@typescript-eslint/typescript-estree');
+      (parseAndGenerateServices as jest.Mock).mockReturnValue({ ast: mockAst });
 
       const result = await analyzer.analyzeFile('/test/MyComponent.tsx');
 
@@ -129,7 +130,8 @@ describe('ComponentAnalyzer', () => {
       };
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
-      mockParseAndGenerateServices.mockReturnValue({ ast: mockAst });
+      const { parseAndGenerateServices } = require('@typescript-eslint/typescript-estree');
+      (parseAndGenerateServices as jest.Mock).mockReturnValue({ ast: mockAst });
 
       const result = await analyzer.analyzeFile('/test/Button.tsx');
 
@@ -159,7 +161,8 @@ describe('ComponentAnalyzer', () => {
       };
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
-      mockParseAndGenerateServices.mockReturnValue({ ast: mockAst });
+      const { parseAndGenerateServices } = require('@typescript-eslint/typescript-estree');
+      (parseAndGenerateServices as jest.Mock).mockReturnValue({ ast: mockAst });
 
       const result = await analyzer.analyzeFile('/test/MyButton.tsx');
 
@@ -191,7 +194,8 @@ describe('ComponentAnalyzer', () => {
       };
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
-      mockParseAndGenerateServices.mockReturnValue({ ast: mockAst });
+      const { parseAndGenerateServices } = require('@typescript-eslint/typescript-estree');
+      (parseAndGenerateServices as jest.Mock).mockReturnValue({ ast: mockAst });
 
       const result = await analyzer.analyzeFile('/test/Button.tsx');
 
