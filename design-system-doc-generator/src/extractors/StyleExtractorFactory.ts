@@ -331,10 +331,16 @@ export class StyleSheetExtractor extends StyleExtractor {
   }
 
   private isStyleSheetCreate(node: any): boolean {
-    return node.type === 'CallExpression' &&
+    const isStyleSheet = node.type === 'CallExpression' &&
            node.callee?.type === 'MemberExpression' &&
            node.callee?.object?.name === 'StyleSheet' &&
            node.callee?.property?.name === 'create';
+    
+    if (isStyleSheet) {
+      console.log('Found StyleSheet.create()');
+    }
+    
+    return isStyleSheet;
   }
 
   private extractStyleObjects(node: any): Record<string, any>[] {

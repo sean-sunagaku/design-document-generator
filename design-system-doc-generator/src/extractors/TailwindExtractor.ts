@@ -81,9 +81,11 @@ export class TailwindExtractor {
 
       // 新しいスタイル抽出システムを使用
       const extractedStyles = this.extractStylesFromAST(ast);
+      console.log(`Component ${componentName} extractedStyles:`, extractedStyles.length, extractedStyles);
       
       // スタイル情報を構築 - extractedStylesの結果に基づいて決定
       const styleInfo: StyleInfo = this.buildStyleInfo(extractedStyles, Array.from(classes));
+      console.log(`Component ${componentName} styleInfo:`, styleInfo);
 
       return {
         filePath,
@@ -105,12 +107,28 @@ export class TailwindExtractor {
 
   private extractStylesFromAST(ast: any): any[] {
     const styles: any[] = [];
-    this.astTraverser.traverse(ast, {
-      onClassName: (node) => {
-        const extractedStyles = this.styleExtractor.extractStyles(node);
-        styles.push(...extractedStyles);
+    
+    // AST全体を走査してスタイル情報を抽出
+    const traverse = (node: any) => {
+      if (!node || typeof node !== 'object') return;
+      
+      // このノードからスタイルを抽出
+      const extractedStyles = this.styleExtractor.extractStyles(node);
+      styles.push(...extractedStyles);
+      
+      // 子ノードも走査
+      if (Array.isArray(node)) {
+        node.forEach(traverse);
+      } else {
+        Object.values(node).forEach(value => {
+          if (typeof value === 'object') {
+            traverse(value);
+          }
+        });
       }
-    });
+    };
+    
+    traverse(ast);
     return styles;
   }
 
@@ -129,5 +147,57 @@ export class TailwindExtractor {
       cls.includes('duration-') ||
       cls.includes('ease-')
     );
+  }
+
+  private buildStyleInfo(extractedStyles: any[], tailwindClasses: string[]): StyleInfo {
+    // StyleSheetスタイルが存在する場合
+    const hasStyleSheet = extractedStyles.some(style => 
+      style.type === 'stylesheet' || style.source?.includes('StyleSheet')
+    );
+    
+    if (hasStyleSheet) {
+      // StyleSheetのスタイル情報を構築
+      const stylesheetStyles = extractedStyles
+        .filter(style => style.type === 'stylesheet')
+        .reduce((acc, style) => {
+          if (style.value && typeof style.value === 'object') {
+            Object.assign(acc, style.value);
+          }
+          return acc;
+        }, {});
+        
+      return {
+        type: 'stylesheet',
+        styles: stylesheetStyles,
+        imports: ['StyleSheet'],
+        responsive: false,
+        darkMode: false,
+        animations: []
+      };
+    }
+    
+    // Tailwindクラスが存在する場合
+    if (tailwindClasses.length > 0) {
+      return {
+        type: 'tailwind',
+        tailwindClasses: tailwindClasses.sort(),
+        classes: tailwindClasses.sort(),
+        styles: {},
+        imports: [],
+        responsive: this.hasResponsiveClasses(tailwindClasses),
+        darkMode: this.hasDarkModeClasses(tailwindClasses),
+        animations: this.extractAnimations(tailwindClasses)
+      };
+    }
+    
+    // デフォルト（何も見つからない場合）
+    return {
+      type: 'stylesheet',
+      styles: {},
+      imports: [],
+      responsive: false,
+      darkMode: false,
+      animations: []
+    };
   }
 }
