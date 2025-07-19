@@ -227,23 +227,36 @@ export interface CodeExample {
 }
 
 export interface ValidationResult {
-  isValid: boolean;
+  isValid?: boolean;
+  filePath?: string;
+  componentCount?: number;
   errors: ValidationError[];
   warnings: ValidationWarning[];
+  suggestions?: ValidationSuggestion[];
 }
 
 export interface ValidationError {
-  line: number;
-  column: number;
+  line?: number;
+  column?: number;
   message: string;
   code?: string;
+  severity?: 'error' | 'warning' | 'info';
 }
 
 export interface ValidationWarning {
-  line: number;
-  column: number;
+  line?: number;
+  column?: number;
   message: string;
   code?: string;
+  severity?: 'error' | 'warning' | 'info';
+}
+
+export interface ValidationSuggestion {
+  line?: number;
+  column?: number;
+  message: string;
+  code?: string;
+  severity?: 'error' | 'warning' | 'info';
 }
 
 export interface GenerationMetadata {

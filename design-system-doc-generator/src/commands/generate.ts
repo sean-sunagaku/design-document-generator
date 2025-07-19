@@ -4,10 +4,18 @@ import { TailwindExtractor } from '../extractors/TailwindExtractor';
 import { DesignTokenExtractor } from '../extractors/DesignTokenExtractor';
 import { AIDocumentGenerator } from '../generators/AIDocumentGenerator';
 import { findFiles, ensureDirectoryExists } from '../utils/fileUtils';
+import { StyleExtractorFactory } from '../extractors/StyleExtractorFactory';
+import { PlatformExtractorFactory } from '../extractors/PlatformExtractorFactory';
+import { MultiPlatformDocumentGenerator } from '../generators/MultiPlatformDocumentGenerator';
+import { ConfigManager } from '../config/ConfigManager';
+import { Platform, StyleSystem } from '../types';
 
 export interface GenerateOptions {
   source: string;
   output: string;
+  config?: string;
+  platform?: Platform;
+  styleSystem?: StyleSystem;
   includeExamples: boolean;
 }
 
@@ -24,7 +32,17 @@ export class GenerateCommand {
     
     console.log(chalk.blue('🔍 Analyzing components...'));
 
-    // Initialize extractors
+    // ConfigManagerから設定を取得
+    const configManager = ConfigManager.getInstance();
+    const config = await configManager.loadConfig(this.options.config);
+    
+    // CLI引数で設定を上書き
+    const finalPlatform = (this.options.platform || config.platform) as Platform;
+    const finalStyleSystem = (this.options.styleSystem || config.styleSystem) as StyleSystem;
+    
+    console.log(chalk.gray(`Platform: ${finalPlatform}, Style System: ${finalStyleSystem}`));
+
+    // 既存のTailwindExtractorを使用（一時的な修正）
     const tailwindExtractor = new TailwindExtractor({
       sourceDir: sourcePath,
       ignore: [
@@ -43,7 +61,7 @@ export class GenerateCommand {
     const tokenExtractor = new DesignTokenExtractor();
     const documentGenerator = new AIDocumentGenerator();
 
-    // Find all React/TypeScript files
+    // プラットフォーム固有のファイル検索（既存の方法を使用）
     const patterns = [
       `${sourcePath}/**/*.tsx`,
       `${sourcePath}/**/*.jsx`,
@@ -64,10 +82,9 @@ export class GenerateCommand {
       !file.includes('.stories.') &&
       (file.endsWith('.tsx') || file.endsWith('.jsx'))
     );
-
     console.log(chalk.gray(`Found ${componentFiles.length} component files`));
 
-    // Extract components
+    // Extract components using tailwind extractor
     const components = [];
     for (const file of componentFiles) {
       const component = await tailwindExtractor.extractFromFile(file);
@@ -78,13 +95,19 @@ export class GenerateCommand {
 
     console.log(chalk.gray(`Extracted ${components.length} components`));
 
-    // Extract design tokens
-    const tailwindConfigPath = path.join(process.cwd(), 'tailwind.config.js');
-    const tokens = await tokenExtractor.extractFromTailwindConfig(tailwindConfigPath);
+    // Extract design tokens (プラットフォーム・スタイルシステムに応じて)
+    let tokens;
+    if (finalStyleSystem === 'tailwind') {
+      const tailwindConfigPath = path.join(process.cwd(), 'tailwind.config.js');
+      tokens = await tokenExtractor.extractFromTailwindConfig(tailwindConfigPath);
+    } else {
+      // StyleSheetやその他のスタイルシステム用のtoken extraction
+      tokens = await tokenExtractor.extractFromStyleSheet(components);
+    }
 
     console.log(chalk.blue('📝 Generating documentation...'));
 
-    // Generate AI document
+    // Generate AI document using existing generator
     const result = await documentGenerator.generate(components, tokens, {
       includeExamples: this.options.includeExamples,
       outputFormat: 'json',

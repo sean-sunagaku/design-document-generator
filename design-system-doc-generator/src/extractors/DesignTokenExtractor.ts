@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { DesignTokens, ColorToken, TypographyTokens } from '../types';
+import { DesignTokens, ColorToken, TypographyTokens, ExtractedComponent } from '../types';
 
 export class DesignTokenExtractor {
   async extractFromTailwindConfig(configPath: string): Promise<DesignTokens> {
@@ -190,6 +190,105 @@ export class DesignTokenExtractor {
     const b = parseInt(result[3], 16);
     
     return `rgb(${r}, ${g}, ${b})`;
+  }
+
+  async extractFromStyleSheet(components: ExtractedComponent[]): Promise<DesignTokens> {
+    const tokens: DesignTokens = this.getDefaultTokens();
+    
+    // StyleSheetコンポーネントからデザイントークンを抽出
+    for (const component of components) {
+      if ((component as any).styles?.styleSheet) {
+        const styleSheet = (component as any).styles.styleSheet;
+        
+        // 色の抽出
+        this.extractColorsFromStyleSheet(styleSheet, tokens.colors);
+        
+        // スペーシングの抽出
+        this.extractSpacingFromStyleSheet(styleSheet, tokens.spacing);
+        
+        // タイポグラフィの抽出
+        this.extractTypographyFromStyleSheet(styleSheet, tokens.typography);
+        
+        // シャドウの抽出
+        this.extractShadowsFromStyleSheet(styleSheet, tokens.shadows);
+        
+        // ボーダーラジアスの抽出
+        this.extractBorderRadiusFromStyleSheet(styleSheet, tokens.borderRadius);
+      }
+    }
+    
+    return tokens;
+  }
+
+  private extractColorsFromStyleSheet(styleSheet: Record<string, any>, colors: Record<string, ColorToken>): void {
+    for (const [key, styles] of Object.entries(styleSheet)) {
+      if (styles.backgroundColor) {
+        const colorKey = `background-${key}`;
+        colors[colorKey] = {
+          value: styles.backgroundColor,
+          rgb: this.hexToRgb(styles.backgroundColor) || styles.backgroundColor,
+          usage: [key]
+        };
+      }
+      if (styles.color) {
+        const colorKey = `text-${key}`;
+        colors[colorKey] = {
+          value: styles.color,
+          rgb: this.hexToRgb(styles.color) || styles.color,
+          usage: [key]
+        };
+      }
+    }
+  }
+
+  private extractSpacingFromStyleSheet(styleSheet: Record<string, any>, spacing: Record<string, string>): void {
+    for (const [key, styles] of Object.entries(styleSheet)) {
+      ['padding', 'paddingHorizontal', 'paddingVertical', 'margin', 'marginHorizontal', 'marginVertical'].forEach(prop => {
+        if (styles[prop] !== undefined) {
+          spacing[`${prop}-${key}`] = String(styles[prop]);
+        }
+      });
+    }
+  }
+
+  private extractTypographyFromStyleSheet(styleSheet: Record<string, any>, typography: TypographyTokens): void {
+    for (const [key, styles] of Object.entries(styleSheet)) {
+      if (styles.fontSize) {
+        typography.fontSize[`size-${key}`] = String(styles.fontSize);
+      }
+      if (styles.fontWeight) {
+        typography.fontWeight[`weight-${key}`] = String(styles.fontWeight);
+      }
+      if (styles.fontFamily) {
+        typography.fontFamily[`family-${key}`] = styles.fontFamily;
+      }
+      if (styles.lineHeight) {
+        typography.lineHeight[`height-${key}`] = String(styles.lineHeight);
+      }
+    }
+  }
+
+  private extractShadowsFromStyleSheet(styleSheet: Record<string, any>, shadows: Record<string, string>): void {
+    for (const [key, styles] of Object.entries(styleSheet)) {
+      if (styles.shadowColor || styles.elevation) {
+        const shadowKey = `shadow-${key}`;
+        if (styles.shadowColor) {
+          // iOS shadow
+          shadows[shadowKey] = `${styles.shadowOffset?.width || 0}px ${styles.shadowOffset?.height || 0}px ${styles.shadowRadius || 0}px ${styles.shadowColor}`;
+        } else if (styles.elevation) {
+          // Android elevation
+          shadows[shadowKey] = `elevation-${styles.elevation}`;
+        }
+      }
+    }
+  }
+
+  private extractBorderRadiusFromStyleSheet(styleSheet: Record<string, any>, borderRadius: Record<string, string>): void {
+    for (const [key, styles] of Object.entries(styleSheet)) {
+      if (styles.borderRadius) {
+        borderRadius[`radius-${key}`] = String(styles.borderRadius);
+      }
+    }
   }
 
   private getDefaultTokens(): DesignTokens {

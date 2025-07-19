@@ -102,10 +102,13 @@ program
   .requiredOption('--to <system>', '変換先スタイルシステム (stylesheet|tailwind)')
   .option('-s, --source <dir>', 'ソースディレクトリ', './src')
   .option('-o, --output <dir>', '出力ディレクトリ')
+  .option('-f, --file <path>', '特定のファイルを変換')
   .action(async (options) => {
+    const { ConvertCommand } = await import('./commands/convert');
     const spinner = ora(`${options.from} から ${options.to} に変換中...`).start();
     try {
-      console.log(chalk.yellow('スタイル変換機能は将来のバージョンで実装予定です'));
+      const command = new ConvertCommand(options);
+      await command.execute();
       spinner.succeed(chalk.green('変換完了！'));
     } catch (error) {
       spinner.fail(chalk.red('エラーが発生しました'));
@@ -120,14 +123,14 @@ program
   .description('デザインシステムのバリデーション')
   .option('-s, --source <dir>', 'ソースディレクトリ', './src')
   .option('-c, --config <path>', '設定ファイルパス')
-  .option('--rules <rules>', 'バリデーションルール (accessibility,performance)', 'syntax,style')
+  .option('--rules <rules>', 'バリデーションルール (accessibility,performance,syntax,style)', 'syntax,style')
+  .option('-p, --platform <platform>', 'プラットフォーム (web|react-native)')
   .action(async (options) => {
+    const { ValidateCommand } = await import('./commands/validate');
     const spinner = ora('バリデーション実行中...').start();
     try {
-      const configManager = ConfigManager.getInstance();
-      await configManager.loadConfig(options.config);
-      
-      console.log(chalk.yellow('バリデーション機能は将来のバージョンで実装予定です'));
+      const command = new ValidateCommand(options);
+      await command.execute();
       spinner.succeed(chalk.green('バリデーション完了！'));
     } catch (error) {
       spinner.fail(chalk.red('エラーが発生しました'));

@@ -2,9 +2,11 @@ import { Platform, StyleSystem } from '../types';
 
 export interface ConversionResult {
   success: boolean;
-  converted: any;
+  converted?: any;
+  styles?: Record<string, any>;
+  classes?: string[];
   warnings: ConversionWarning[];
-  unmappedProperties: string[];
+  unmappedProperties?: string[];
 }
 
 export interface ConversionWarning {

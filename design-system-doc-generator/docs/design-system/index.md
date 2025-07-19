@@ -11,7 +11,7 @@ This directory contains automatically generated documentation for the project's 
 ## Summary
 
 - **Project**: design-system-doc-generator
-- **Generated**: 2025/7/18 17:16:11
+- **Generated**: 2025/7/18 19:03:33
 - **Components**: 2
 - **Design Tokens**: 0 colors, 0 spacing
 - **Patterns**: 1
