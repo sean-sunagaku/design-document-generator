@@ -36,7 +36,7 @@ export class TailwindUtils {
     /^(z)-/,
     
     // Special cases - standalone classes
-    /^(flex|grid|table|block|inline|hidden|sr-only|not-sr-only|visible|invisible|static|fixed|absolute|relative|sticky|truncate|antialiased|subpixel-antialiased|italic|not-italic|uppercase|lowercase|capitalize|normal-case|underline|line-through|no-underline|rounded|rounded-full)$/,
+    /^(flex|grid|table|block|inline|hidden|sr-only|not-sr-only|visible|invisible|static|fixed|absolute|relative|sticky|truncate|antialiased|subpixel-antialiased|italic|not-italic|uppercase|lowercase|capitalize|normal-case|underline|line-through|no-underline|rounded|rounded-full|border)$/,
   ];
 
   static isTailwindClass(className: string): boolean {
@@ -48,10 +48,10 @@ export class TailwindUtils {
     // カスタムクラス（大文字始まり、特定の単語など）を除外
     const customClassPatterns = [
       /^[A-Z]/, // 大文字始まり（コンポーネント名など）
-      /^my-/, // my-で始まるカスタムクラス
       /^custom-/, // custom-で始まるカスタムクラス
       /component/i, // componentを含む
       /style$/i, // styleで終わる
+      /^my-(?!\d)/,  // my-で始まるがTailwindの数値パターンでないもの（my-1, my-2等はTailwind）
     ];
 
     if (customClassPatterns.some(pattern => pattern.test(className))) {
@@ -112,7 +112,7 @@ export class TailwindUtils {
         categories.typography.push(cls);
       } else if (/^(bg|text|border|fill|stroke)-/.test(cls) && !cls.includes('width') && !cls.includes('style')) {
         categories.colors.push(cls);
-      } else if (/^(border|rounded|ring)-/.test(cls)) {
+      } else if (/^(border|rounded|ring)/.test(cls)) {
         categories.borders.push(cls);
       } else if (/^(shadow|blur|brightness|contrast|opacity|backdrop)-/.test(cls)) {
         categories.effects.push(cls);

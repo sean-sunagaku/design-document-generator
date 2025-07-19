@@ -53,6 +53,15 @@ describe('TailwindExtractor', () => {
 
     const { parseAndGenerateServices } = require('@typescript-eslint/typescript-estree');
     (parseAndGenerateServices as jest.Mock).mockReturnValue({ ast: mockAst });
+
+    // Mock ComponentAnalyzer to return proper result
+    const { ComponentAnalyzer } = require('../../extractors/ast/ComponentAnalyzer');
+    ComponentAnalyzer.prototype.analyzeFile = jest.fn().mockResolvedValue({
+      content: 'mock content',
+      ast: mockAst,
+      componentName: 'Button',
+      isComponentFile: true
+    });
   });
 
   describe('extractFromFile', () => {

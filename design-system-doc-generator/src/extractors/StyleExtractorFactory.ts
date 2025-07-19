@@ -48,12 +48,43 @@ export class TailwindStyleExtractor extends StyleExtractor {
   constructor(config: ExtractorConfig) {
     super(config);
     this.tailwindPatterns = [
-      // 既存のTailwindClassExtractorのパターンを移行
+      // Spacing and layout
       /^(p|pl|pr|pt|pb|px|py|m|ml|mr|mt|mb|mx|my)-/,
       /^(w|h|min-w|min-h|max-w|max-h)-/,
       /^(flex|grid|absolute|relative|fixed|sticky)/,
       /^(block|inline|inline-block|inline-flex|table|grid|hidden)$/,
-      // ... 他のパターン
+      /^(justify|items|content|self)-/,
+      /^(space|gap|col|row)-/,
+      /^(inset|top|right|bottom|left)-/,
+      
+      // Colors and backgrounds
+      /^(bg|text|border|ring|shadow|fill|stroke)-/,
+      /^(placeholder|caret|accent|decoration)-/,
+      
+      // Typography
+      /^(font|text|leading|tracking|align|decoration|whitespace|break|list)-/,
+      
+      // Borders and effects
+      /^(border|rounded|ring|shadow|outline)-/,
+      /^(opacity|blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|saturate|sepia|backdrop)-/,
+      
+      // Animations and transitions
+      /^(animate|transition|duration|delay|ease)-/,
+      /^(transform|scale|rotate|translate|skew|origin)-/,
+      
+      // States and responsive
+      /^(hover|focus|active|disabled|dark|group-hover|group-focus|peer|visited|target|first|last|odd|even):/,
+      /^(sm|md|lg|xl|2xl):/,
+      
+      // Interactive
+      /^(cursor|select|resize|appearance|pointer-events|user-select)-/,
+      
+      // Layout utilities
+      /^(float|clear|object|overflow|overscroll|scroll)-/,
+      /^(z)-/,
+      
+      // Special cases - standalone classes
+      /^(flex|grid|table|block|inline|hidden|sr-only|not-sr-only|visible|invisible|static|fixed|absolute|relative|sticky|truncate|antialiased|subpixel-antialiased|italic|not-italic|uppercase|lowercase|capitalize|normal-case|underline|line-through|no-underline|rounded|rounded-full|border)$/,
     ];
   }
 
@@ -101,15 +132,55 @@ export class TailwindStyleExtractor extends StyleExtractor {
   }
 
   private extractClassNames(node: any): string[] {
-    // 既存のTailwindClassExtractorの実装を移行
-    if (node.type === 'Literal') {
+    if (node?.type === 'Literal' && typeof node.value === 'string') {
       return node.value.split(/\s+/).filter(Boolean);
     }
-    // ... 他の処理
+    
+    if (node?.type === 'TemplateLiteral') {
+      // テンプレートリテラルから文字列部分を抽出
+      let result = '';
+      if (node.quasis) {
+        node.quasis.forEach((quasi: any) => {
+          if (quasi.value?.raw) {
+            result += quasi.value.raw + ' ';
+          }
+        });
+      }
+      return result.split(/\s+/).filter(Boolean);
+    }
+
+    if (node?.type === 'JSXExpressionContainer') {
+      return this.extractClassNames(node.expression);
+    }
+
     return [];
   }
 
   private isTailwindClass(className: string): boolean {
+    // 空文字やスペースのみの場合は無効
+    if (!className || !className.trim()) {
+      return false;
+    }
+
+    // 明らかにカスタムクラスと思われるパターンを除外
+    const customPatterns = [
+      /^custom-/,    // custom-で始まる
+      /component/,   // componentを含む
+      /^my-(?!\d)/,  // my-で始まるがTailwindの数値パターンでないもの（my-1, my-2等はTailwind）
+      /^[a-z]+-[a-z]+-[a-z]+$/  // 3つの単語をハイフンで繋いだもの（一般的でないパターン）
+    ];
+
+    // カスタムパターンに一致する場合はTailwindクラスではない
+    if (customPatterns.some(pattern => pattern.test(className))) {
+      return false;
+    }
+
+    // 不完全なクラス名（ハイフンで終わるなど）を除外
+    if (className.endsWith('-') || className.startsWith('-')) {
+      return false;
+    }
+
+    // Tailwindパターンに一致するかチェック
     return this.tailwindPatterns.some(pattern => pattern.test(className));
   }
 }

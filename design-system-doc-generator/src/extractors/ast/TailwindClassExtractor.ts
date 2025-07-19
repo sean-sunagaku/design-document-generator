@@ -39,7 +39,7 @@ export class TailwindClassExtractor {
       /^(z)-/,
       
       // Special cases - standalone classes
-      /^(flex|grid|table|block|inline|hidden|sr-only|not-sr-only|visible|invisible|static|fixed|absolute|relative|sticky|truncate|antialiased|subpixel-antialiased|italic|not-italic|uppercase|lowercase|capitalize|normal-case|underline|line-through|no-underline|rounded|rounded-full)$/,
+      /^(flex|grid|table|block|inline|hidden|sr-only|not-sr-only|visible|invisible|static|fixed|absolute|relative|sticky|truncate|antialiased|subpixel-antialiased|italic|not-italic|uppercase|lowercase|capitalize|normal-case|underline|line-through|no-underline|rounded|rounded-full|border)$/,
     ];
   }
 
@@ -114,6 +114,30 @@ export class TailwindClassExtractor {
   }
 
   isTailwindClass(className: string): boolean {
+    // 空文字やスペースのみの場合は無効
+    if (!className || !className.trim()) {
+      return false;
+    }
+
+    // 明らかにカスタムクラスと思われるパターンを除外
+    const customPatterns = [
+      /^custom-/,    // custom-で始まる
+      /component/,   // componentを含む
+      /^my-(?!\d)/,  // my-で始まるがTailwindの数値パターンでないもの（my-1, my-2等はTailwind）
+      /^[a-z]+-[a-z]+-[a-z]+$/  // 3つの単語をハイフンで繋いだもの（一般的でないパターン）
+    ];
+
+    // カスタムパターンに一致する場合はTailwindクラスではない
+    if (customPatterns.some(pattern => pattern.test(className))) {
+      return false;
+    }
+
+    // 不完全なクラス名（ハイフンで終わるなど）を除外
+    if (className.endsWith('-') || className.startsWith('-')) {
+      return false;
+    }
+
+    // Tailwindパターンに一致するかチェック
     return this.tailwindPatterns.some(pattern => pattern.test(className));
   }
 }
