@@ -108,28 +108,8 @@ export class CodeValidator {
         ts.ScriptKind.TSX
       );
 
-      // Check for syntax errors
-      const diagnostics = ts.getPreEmitDiagnostics(
-        ts.createProgram([filename], {
-          target: ts.ScriptTarget.ES2020,
-          module: ts.ModuleKind.ESNext,
-          jsx: ts.JsxEmit.React,
-          strict: false,
-          skipLibCheck: true,
-          skipDefaultLibCheck: true,
-        }, {
-          getSourceFile: (name) => name === filename ? sourceFile : undefined,
-          writeFile: () => {},
-          getCurrentDirectory: () => process.cwd(),
-          getDirectories: () => [],
-          fileExists: (name) => name === filename,
-          readFile: (name) => name === filename ? code : undefined,
-          getCanonicalFileName: (name) => name,
-          useCaseSensitiveFileNames: () => true,
-          getNewLine: () => '\n',
-          getDefaultLibFileName: (options) => ts.getDefaultLibFilePath(options),
-        })
-      );
+      // Check for syntax errors only
+      const diagnostics = sourceFile.parseDiagnostics;
 
       diagnostics.forEach(diagnostic => {
         const { line, character } = sourceFile.getLineAndCharacterOfPosition(

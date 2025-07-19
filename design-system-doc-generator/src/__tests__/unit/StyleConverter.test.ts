@@ -196,10 +196,9 @@ describe('StyleConverter', () => {
       const tailwindClasses = ['w-full', 'h-auto', 'w-64'];
       const result = converter.tailwindToStyleSheet(tailwindClasses);
 
-      expect(result.converted.container.width).toBe('100%');
-      expect(result.converted.container.height).toBe('auto');
-      // w-64 should convert to 256 (64 * 4)
+      // w-64 should override w-full, converting to 256 (64 * 4)
       expect(result.converted.container.width).toBe(256);
+      expect(result.converted.container.height).toBe('auto');
     });
   });
 });

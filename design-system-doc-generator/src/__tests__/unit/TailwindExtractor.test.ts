@@ -13,13 +13,51 @@ jest.mock('fs', () => ({
   },
 }));
 
+// Mock ConfigManager
+jest.mock('../../config/ConfigManager', () => ({
+  ConfigManager: {
+    getInstance: jest.fn(() => ({
+      getConfig: jest.fn(() => ({
+        styleSystem: 'tailwind',
+        platform: 'web',
+        sourceDir: './test-fixtures',
+        ignore: ['**/*.test.tsx']
+      }))
+    }))
+  }
+}));
+
 // Mock the new architecture modules
-jest.mock('../../extractors/ast/ComponentAnalyzer');
-jest.mock('../../extractors/ast/ASTTraverser');
-jest.mock('../../extractors/ast/TailwindClassExtractor');
-jest.mock('../../extractors/ast/PropExtractor');
-jest.mock('../../extractors/ast/JSXStructureExtractor');
-jest.mock('../../extractors/ast/ComponentCategorizer');
+jest.mock('../../extractors/ast/ComponentAnalyzer', () => ({
+  ComponentAnalyzer: jest.fn().mockImplementation(() => ({
+    analyzeFile: jest.fn()
+  }))
+}));
+jest.mock('../../extractors/ast/ASTTraverser', () => ({
+  ASTTraverser: jest.fn().mockImplementation(() => ({
+    traverse: jest.fn()
+  }))
+}));
+jest.mock('../../extractors/ast/TailwindClassExtractor', () => ({
+  TailwindClassExtractor: jest.fn().mockImplementation(() => ({
+    extractClasses: jest.fn()
+  }))
+}));
+jest.mock('../../extractors/ast/PropExtractor', () => ({
+  PropExtractor: jest.fn().mockImplementation(() => ({
+    extractProps: jest.fn()
+  }))
+}));
+jest.mock('../../extractors/ast/JSXStructureExtractor', () => ({
+  JSXStructureExtractor: jest.fn().mockImplementation(() => ({
+    extractJSXStructure: jest.fn()
+  }))
+}));
+jest.mock('../../extractors/ast/ComponentCategorizer', () => ({
+  ComponentCategorizer: jest.fn().mockImplementation(() => ({
+    categorizeComponent: jest.fn()
+  }))
+}));
 jest.mock('../../extractors/StyleExtractorFactory', () => ({
   StyleExtractorFactory: {
     createExtractor: jest.fn(() => ({
@@ -38,10 +76,6 @@ describe('TailwindExtractor', () => {
     });
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   describe('extractFromFile', () => {
     it('should extract static Tailwind classes', async () => {
       const mockContent = `
@@ -58,20 +92,27 @@ describe('TailwindExtractor', () => {
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
 
-      // Setup mocks
+      // Get the mocked classes
       const { ComponentAnalyzer } = require('../../extractors/ast/ComponentAnalyzer');
       const { ASTTraverser } = require('../../extractors/ast/ASTTraverser');
       const { TailwindClassExtractor } = require('../../extractors/ast/TailwindClassExtractor');
       const { ComponentCategorizer } = require('../../extractors/ast/ComponentCategorizer');
 
-      ComponentAnalyzer.prototype.analyzeFile = jest.fn().mockResolvedValue({
+      // Create a fresh extractor instance after setting up mocks
+      const freshExtractor = new TailwindExtractor({
+        sourceDir: './test-fixtures',
+        ignore: ['**/*.test.tsx'],
+      });
+
+      // Mock the instance methods
+      freshExtractor['componentAnalyzer'].analyzeFile = jest.fn().mockResolvedValue({
         content: mockContent,
         ast: { type: 'Program', body: [] },
         componentName: 'Button',
         isComponentFile: true
       });
 
-      ASTTraverser.prototype.traverse = jest.fn().mockImplementation((ast, callbacks) => {
+      freshExtractor['astTraverser'].traverse = jest.fn().mockImplementation((ast, callbacks) => {
         if (callbacks.onClassName) {
           callbacks.onClassName({
             type: 'JSXAttribute',
@@ -92,13 +133,13 @@ describe('TailwindExtractor', () => {
         }
       });
 
-      TailwindClassExtractor.prototype.extractClasses = jest.fn().mockReturnValue([
+      freshExtractor['tailwindExtractor'].extractClasses = jest.fn().mockReturnValue([
         'bg-blue-500', 'hover:bg-blue-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded'
       ]);
 
-      ComponentCategorizer.prototype.categorizeComponent = jest.fn().mockReturnValue(undefined);
+      freshExtractor['categorizer'].categorizeComponent = jest.fn().mockReturnValue(undefined);
 
-      const result = await extractor.extractFromFile('/test/Button.tsx');
+      const result = await freshExtractor.extractFromFile('/test/Button.tsx');
 
       expect(result).not.toBeNull();
       expect(result?.componentName).toBe('Button');
@@ -126,20 +167,21 @@ describe('TailwindExtractor', () => {
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
 
-      // Setup mocks
-      const { ComponentAnalyzer } = require('../../extractors/ast/ComponentAnalyzer');
-      const { ASTTraverser } = require('../../extractors/ast/ASTTraverser');
-      const { TailwindClassExtractor } = require('../../extractors/ast/TailwindClassExtractor');
-      const { ComponentCategorizer } = require('../../extractors/ast/ComponentCategorizer');
+      // Create a fresh extractor instance after setting up mocks
+      const freshExtractor = new TailwindExtractor({
+        sourceDir: './test-fixtures',
+        ignore: ['**/*.test.tsx'],
+      });
 
-      ComponentAnalyzer.prototype.analyzeFile = jest.fn().mockResolvedValue({
+      // Mock the instance methods
+      freshExtractor['componentAnalyzer'].analyzeFile = jest.fn().mockResolvedValue({
         content: mockContent,
         ast: { type: 'Program', body: [] },
         componentName: 'Card',
         isComponentFile: true
       });
 
-      ASTTraverser.prototype.traverse = jest.fn().mockImplementation((ast, callbacks) => {
+      freshExtractor['astTraverser'].traverse = jest.fn().mockImplementation((ast, callbacks) => {
         if (callbacks.onClassName) {
           callbacks.onClassName({
             type: 'JSXAttribute',
@@ -152,15 +194,16 @@ describe('TailwindExtractor', () => {
         }
       });
 
-      TailwindClassExtractor.prototype.extractClasses = jest.fn().mockReturnValue([
+      freshExtractor['tailwindExtractor'].extractClasses = jest.fn().mockReturnValue([
         'bg-white', 'border', 'border-blue-500', 'border-gray-300', 'rounded-lg', 'p-4'
       ]);
 
-      ComponentCategorizer.prototype.categorizeComponent = jest.fn().mockReturnValue(undefined);
+      freshExtractor['categorizer'].categorizeComponent = jest.fn().mockReturnValue(undefined);
 
-      const result = await extractor.extractFromFile('/test/Card.tsx');
+      const result = await freshExtractor.extractFromFile('/test/Card.tsx');
 
       expect(result).not.toBeNull();
+      expect(result?.componentName).toBe('Card');
       expect(result?.tailwindClasses).toContain('bg-white');
       expect(result?.tailwindClasses).toContain('border');
       expect(result?.tailwindClasses).toContain('border-blue-500');
@@ -188,20 +231,21 @@ describe('TailwindExtractor', () => {
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
 
-      // Setup mocks
-      const { ComponentAnalyzer } = require('../../extractors/ast/ComponentAnalyzer');
-      const { ASTTraverser } = require('../../extractors/ast/ASTTraverser');
-      const { TailwindClassExtractor } = require('../../extractors/ast/TailwindClassExtractor');
-      const { ComponentCategorizer } = require('../../extractors/ast/ComponentCategorizer');
+      // Create a fresh extractor instance after setting up mocks
+      const freshExtractor = new TailwindExtractor({
+        sourceDir: './test-fixtures',
+        ignore: ['**/*.test.tsx'],
+      });
 
-      ComponentAnalyzer.prototype.analyzeFile = jest.fn().mockResolvedValue({
+      // Mock the instance methods
+      freshExtractor['componentAnalyzer'].analyzeFile = jest.fn().mockResolvedValue({
         content: mockContent,
         ast: { type: 'Program', body: [] },
         componentName: 'Button',
         isComponentFile: true
       });
 
-      ASTTraverser.prototype.traverse = jest.fn().mockImplementation((ast, callbacks) => {
+      freshExtractor['astTraverser'].traverse = jest.fn().mockImplementation((ast, callbacks) => {
         if (callbacks.onClassName) {
           callbacks.onClassName({
             type: 'JSXExpressionContainer',
@@ -221,13 +265,13 @@ describe('TailwindExtractor', () => {
         }
       });
 
-      TailwindClassExtractor.prototype.extractClasses = jest.fn().mockReturnValue([
+      freshExtractor['tailwindExtractor'].extractClasses = jest.fn().mockReturnValue([
         'px-4', 'py-2', 'rounded', 'bg-blue-500', 'text-white', 'bg-gray-200', 'text-gray-800'
       ]);
 
-      ComponentCategorizer.prototype.categorizeComponent = jest.fn().mockReturnValue(undefined);
+      freshExtractor['categorizer'].categorizeComponent = jest.fn().mockReturnValue(undefined);
 
-      const result = await extractor.extractFromFile('/test/Button.tsx');
+      const result = await freshExtractor.extractFromFile('/test/Button.tsx');
 
       expect(result).not.toBeNull();
       expect(result?.tailwindClasses).toContain('px-4');
@@ -266,20 +310,21 @@ describe('TailwindExtractor', () => {
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
 
-      // Setup mocks
-      const { ComponentAnalyzer } = require('../../extractors/ast/ComponentAnalyzer');
-      const { ASTTraverser } = require('../../extractors/ast/ASTTraverser');
-      const { TailwindClassExtractor } = require('../../extractors/ast/TailwindClassExtractor');
-      const { ComponentCategorizer } = require('../../extractors/ast/ComponentCategorizer');
+      // Create a fresh extractor instance after setting up mocks
+      const freshExtractor = new TailwindExtractor({
+        sourceDir: './test-fixtures',
+        ignore: ['**/*.test.tsx'],
+      });
 
-      ComponentAnalyzer.prototype.analyzeFile = jest.fn().mockResolvedValue({
+      // Mock the instance methods
+      freshExtractor['componentAnalyzer'].analyzeFile = jest.fn().mockResolvedValue({
         content: mockContent,
         ast: { type: 'Program', body: [] },
         componentName: 'Button',
         isComponentFile: true
       });
 
-      ASTTraverser.prototype.traverse = jest.fn().mockImplementation((ast, callbacks) => {
+      freshExtractor['astTraverser'].traverse = jest.fn().mockImplementation((ast, callbacks) => {
         if (callbacks.onClassName) {
           callbacks.onClassName({
             type: 'JSXAttribute',
@@ -298,11 +343,11 @@ describe('TailwindExtractor', () => {
         }
       });
 
-      TailwindClassExtractor.prototype.extractClasses = jest.fn().mockReturnValue(['px-4', 'py-2']);
+      freshExtractor['tailwindExtractor'].extractClasses = jest.fn().mockReturnValue(['px-4', 'py-2']);
 
-      ComponentCategorizer.prototype.categorizeComponent = jest.fn().mockReturnValue(undefined);
+      freshExtractor['categorizer'].categorizeComponent = jest.fn().mockReturnValue(undefined);
 
-      const result = await extractor.extractFromFile('/test/Button.tsx');
+      const result = await freshExtractor.extractFromFile('/test/Button.tsx');
 
       expect(result).not.toBeNull();
       expect(result?.props).toHaveLength(4);
@@ -336,20 +381,21 @@ describe('TailwindExtractor', () => {
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
 
-      // Setup mocks for categorization test
-      const { ComponentAnalyzer } = require('../../extractors/ast/ComponentAnalyzer');
-      const { ASTTraverser } = require('../../extractors/ast/ASTTraverser');
-      const { TailwindClassExtractor } = require('../../extractors/ast/TailwindClassExtractor');
-      const { ComponentCategorizer } = require('../../extractors/ast/ComponentCategorizer');
+      // Create a fresh extractor instance after setting up mocks
+      const freshExtractor = new TailwindExtractor({
+        sourceDir: './test-fixtures',
+        ignore: ['**/*.test.tsx'],
+      });
 
-      ComponentAnalyzer.prototype.analyzeFile = jest.fn().mockResolvedValue({
+      // Mock the instance methods
+      freshExtractor['componentAnalyzer'].analyzeFile = jest.fn().mockResolvedValue({
         content: mockContent,
         ast: { type: 'Program', body: [] },
         componentName: 'Button',
         isComponentFile: true
       });
 
-      ASTTraverser.prototype.traverse = jest.fn().mockImplementation((ast, callbacks) => {
+      freshExtractor['astTraverser'].traverse = jest.fn().mockImplementation((ast, callbacks) => {
         if (callbacks.onClassName) {
           callbacks.onClassName({
             type: 'JSXAttribute',
@@ -362,9 +408,9 @@ describe('TailwindExtractor', () => {
         }
       });
 
-      TailwindClassExtractor.prototype.extractClasses = jest.fn().mockReturnValue(['px-4', 'py-2']);
+      freshExtractor['tailwindExtractor'].extractClasses = jest.fn().mockReturnValue(['px-4', 'py-2']);
 
-      ComponentCategorizer.prototype.categorizeComponent = jest.fn().mockImplementation((filePath) => {
+      freshExtractor['categorizer'].categorizeComponent = jest.fn().mockImplementation((filePath) => {
         if (filePath.includes('/atoms/')) return 'atoms';
         if (filePath.includes('/molecules/')) return 'molecules';
         if (filePath.includes('/organisms/')) return 'organisms';
@@ -372,15 +418,15 @@ describe('TailwindExtractor', () => {
       });
 
       // Test atoms category
-      const atomResult = await extractor.extractFromFile('/test/atoms/Button.tsx');
+      const atomResult = await freshExtractor.extractFromFile('/test/atoms/Button.tsx');
       expect(atomResult?.category).toBe('atoms');
 
       // Test molecules category
-      const moleculeResult = await extractor.extractFromFile('/test/molecules/Card.tsx');
+      const moleculeResult = await freshExtractor.extractFromFile('/test/molecules/Card.tsx');
       expect(moleculeResult?.category).toBe('molecules');
 
       // Test organisms category
-      const organismResult = await extractor.extractFromFile('/test/organisms/Header.tsx');
+      const organismResult = await freshExtractor.extractFromFile('/test/organisms/Header.tsx');
       expect(organismResult?.category).toBe('organisms');
     });
 
@@ -393,17 +439,21 @@ describe('TailwindExtractor', () => {
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
 
-      // Setup mocks for non-component file
-      const { ComponentAnalyzer } = require('../../extractors/ast/ComponentAnalyzer');
+      // Create a fresh extractor instance after setting up mocks
+      const freshExtractor = new TailwindExtractor({
+        sourceDir: './test-fixtures',
+        ignore: ['**/*.test.tsx'],
+      });
 
-      ComponentAnalyzer.prototype.analyzeFile = jest.fn().mockResolvedValue({
+      // Mock the instance methods
+      freshExtractor['componentAnalyzer'].analyzeFile = jest.fn().mockResolvedValue({
         content: mockContent,
         ast: { type: 'Program', body: [] },
         componentName: null,
         isComponentFile: false
       });
 
-      const result = await extractor.extractFromFile('/test/utils.ts');
+      const result = await freshExtractor.extractFromFile('/test/utils.ts');
       expect(result).toBeNull();
     });
 
@@ -443,20 +493,21 @@ describe('TailwindExtractor', () => {
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
 
-      // Setup mocks
-      const { ComponentAnalyzer } = require('../../extractors/ast/ComponentAnalyzer');
-      const { ASTTraverser } = require('../../extractors/ast/ASTTraverser');
-      const { TailwindClassExtractor } = require('../../extractors/ast/TailwindClassExtractor');
-      const { ComponentCategorizer } = require('../../extractors/ast/ComponentCategorizer');
+      // Create a fresh extractor instance after setting up mocks
+      const freshExtractor = new TailwindExtractor({
+        sourceDir: './test-fixtures',
+        ignore: ['**/*.test.tsx'],
+      });
 
-      ComponentAnalyzer.prototype.analyzeFile = jest.fn().mockResolvedValue({
+      // Mock the instance methods
+      freshExtractor['componentAnalyzer'].analyzeFile = jest.fn().mockResolvedValue({
         content: mockContent,
         ast: { type: 'Program', body: [] },
         componentName: 'Button',
         isComponentFile: true
       });
 
-      ASTTraverser.prototype.traverse = jest.fn().mockImplementation((ast, callbacks) => {
+      freshExtractor['astTraverser'].traverse = jest.fn().mockImplementation((ast, callbacks) => {
         if (callbacks.onClassName) {
           callbacks.onClassName({
             type: 'JSXAttribute',
@@ -470,11 +521,11 @@ describe('TailwindExtractor', () => {
       });
 
       // Only return Tailwind classes, filtering out custom ones
-      TailwindClassExtractor.prototype.extractClasses = jest.fn().mockReturnValue(['px-4', 'py-2']);
+      freshExtractor['tailwindExtractor'].extractClasses = jest.fn().mockReturnValue(['px-4', 'py-2']);
 
-      ComponentCategorizer.prototype.categorizeComponent = jest.fn().mockReturnValue(undefined);
+      freshExtractor['categorizer'].categorizeComponent = jest.fn().mockReturnValue(undefined);
 
-      const result = await extractor.extractFromFile('/test/Button.tsx');
+      const result = await freshExtractor.extractFromFile('/test/Button.tsx');
 
       expect(result).not.toBeNull();
       expect(result?.tailwindClasses).toContain('px-4');
@@ -498,20 +549,21 @@ describe('TailwindExtractor', () => {
 
       (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
 
-      // Setup mocks
-      const { ComponentAnalyzer } = require('../../extractors/ast/ComponentAnalyzer');
-      const { ASTTraverser } = require('../../extractors/ast/ASTTraverser');
-      const { TailwindClassExtractor } = require('../../extractors/ast/TailwindClassExtractor');
-      const { ComponentCategorizer } = require('../../extractors/ast/ComponentCategorizer');
+      // Create a fresh extractor instance after setting up mocks
+      const freshExtractor = new TailwindExtractor({
+        sourceDir: './test-fixtures',
+        ignore: ['**/*.test.tsx'],
+      });
 
-      ComponentAnalyzer.prototype.analyzeFile = jest.fn().mockResolvedValue({
+      // Mock the instance methods
+      freshExtractor['componentAnalyzer'].analyzeFile = jest.fn().mockResolvedValue({
         content: mockContent,
         ast: { type: 'Program', body: [] },
         componentName: 'ResponsiveButton',
         isComponentFile: true
       });
 
-      ASTTraverser.prototype.traverse = jest.fn().mockImplementation((ast, callbacks) => {
+      freshExtractor['astTraverser'].traverse = jest.fn().mockImplementation((ast, callbacks) => {
         if (callbacks.onClassName) {
           callbacks.onClassName({
             type: 'JSXAttribute',
@@ -524,13 +576,13 @@ describe('TailwindExtractor', () => {
         }
       });
 
-      TailwindClassExtractor.prototype.extractClasses = jest.fn().mockReturnValue([
+      freshExtractor['tailwindExtractor'].extractClasses = jest.fn().mockReturnValue([
         'px-4', 'py-2', 'sm:px-6', 'md:px-8', 'lg:px-10', 'hover:bg-blue-600', 'focus:ring-2', 'dark:bg-gray-800'
       ]);
 
-      ComponentCategorizer.prototype.categorizeComponent = jest.fn().mockReturnValue(undefined);
+      freshExtractor['categorizer'].categorizeComponent = jest.fn().mockReturnValue(undefined);
 
-      const result = await extractor.extractFromFile('/test/ResponsiveButton.tsx');
+      const result = await freshExtractor.extractFromFile('/test/ResponsiveButton.tsx');
 
       expect(result).not.toBeNull();
       expect(result?.tailwindClasses).toContain('px-4');

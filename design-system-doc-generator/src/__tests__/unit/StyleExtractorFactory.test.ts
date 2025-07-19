@@ -9,7 +9,19 @@ import { ConfigManager } from '../../config/ConfigManager';
 import { Platform } from '../../types';
 
 // ConfigManagerのモック
-jest.mock('../../config/ConfigManager');
+jest.mock('../../config/ConfigManager', () => ({
+  ConfigManager: {
+    getInstance: jest.fn(() => ({
+      isCustomStyleSystem: jest.fn(() => false),
+      getConfig: jest.fn(() => ({
+        styleSystem: 'tailwind',
+        platform: 'web',
+        sourceDir: './src',
+        ignore: []
+      }))
+    }))
+  }
+}));
 
 describe('StyleExtractorFactory', () => {
   const mockConfig = {
@@ -19,9 +31,6 @@ describe('StyleExtractorFactory', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (ConfigManager.getInstance as jest.Mock).mockReturnValue({
-      isCustomStyleSystem: jest.fn().mockReturnValue(false)
-    });
   });
 
   describe('createExtractor', () => {

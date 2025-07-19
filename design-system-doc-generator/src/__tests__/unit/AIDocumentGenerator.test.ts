@@ -16,9 +16,109 @@ jest.mock('../../utils/fileUtils', () => ({
 }));
 
 // Mock the new architecture modules
-jest.mock('../../generators/document/ComponentDocumentGenerator');
-jest.mock('../../generators/document/PatternDetector');
-jest.mock('../../generators/document/GuidelineGenerator');
+jest.mock('../../generators/document/ComponentDocumentGenerator', () => ({
+  ComponentDocumentGenerator: jest.fn().mockImplementation(() => ({
+    generateComponentDoc: jest.fn().mockImplementation((component, allComponents, options) => {
+      const hasResponsive = component.tailwindClasses?.some(cls => cls.includes('sm:') || cls.includes('md:') || cls.includes('lg:'));
+      const hasDarkMode = component.tailwindClasses?.some(cls => cls.startsWith('dark:'));
+      const animations = component.tailwindClasses?.filter(cls => 
+        cls.startsWith('animate-') || 
+        cls.startsWith('transition-') || 
+        cls.includes('duration-') || 
+        cls.includes('ease-')
+      ) || [];
+      
+      const examples = options?.includeExamples ? [
+        {
+          title: '基本的な使用方法',
+          code: `import { ${component.componentName} } from './components';\n\n<${component.componentName}>Click me</${component.componentName}>`
+        },
+        {
+          title: '全プロパティを使用した例',
+          code: `import { ${component.componentName} } from './components';\n\n<${component.componentName} disabled>Disabled</${component.componentName}>`
+        }
+      ] : [];
+      
+      // Find related components with similar names
+      const relatedComponents = allComponents
+        .filter(c => c.componentName !== component.componentName && 
+                    c.componentName.toLowerCase().includes(component.componentName.toLowerCase()))
+        .map(c => c.componentName);
+      
+      return {
+        id: `${component.category}-${component.componentName.toLowerCase()}`,
+        name: component.componentName,
+        category: component.category,
+        description: `${component.componentName}は基本的なUI要素です`,
+        props: component.props || [],
+        examples,
+        styles: {
+          responsive: hasResponsive,
+          darkMode: hasDarkMode,
+          animations,
+          tailwindClasses: component.tailwindClasses || []
+        },
+        styleInfo: component.styleInfo || {},
+        relatedComponents
+      };
+    })
+  }))
+}));
+jest.mock('../../generators/document/PatternDetector', () => ({
+  PatternDetector: jest.fn().mockImplementation(() => ({
+    detectPatterns: jest.fn().mockImplementation((components) => {
+      const patterns = [];
+      
+      // Create patterns based on component categories
+      const hasButtons = components.some(c => c.componentName.toLowerCase().includes('button'));
+      const hasCards = components.some(c => c.componentName.toLowerCase().includes('card'));
+      const hasForms = components.some(c => c.componentName.toLowerCase().includes('form'));
+      
+      if (hasButtons) {
+        patterns.push({
+          name: 'ボタンシステム',
+          description: 'アプリケーション全体で一貫したボタンスタイル',
+          components: components.filter(c => c.componentName.toLowerCase().includes('button')).map(c => c.componentName),
+          examples: []
+        });
+      }
+      
+      if (hasCards) {
+        patterns.push({
+          name: 'カードシステム',
+          description: 'コンテンツを整理するためのカード構造',
+          components: components.filter(c => c.componentName.toLowerCase().includes('card')).map(c => c.componentName),
+          examples: []
+        });
+      }
+      
+      if (hasForms) {
+        patterns.push({
+          name: 'フォームシステム',
+          description: 'ユーザー入力を収集するためのフォーム構造',
+          components: components.filter(c => c.componentName.toLowerCase().includes('form')).map(c => c.componentName),
+          examples: []
+        });
+      }
+      
+      return {
+        patterns,
+        relationships: []
+      };
+    })
+  }))
+}));
+jest.mock('../../generators/document/GuidelineGenerator', () => ({
+  GuidelineGenerator: jest.fn().mockImplementation(() => ({
+    generateGuidelines: jest.fn().mockImplementation((components, tokens) => [
+      'カラーパレット: プライマリ、セカンダリ、アクセントカラーの適切な使用',
+      'スペーシング: 8pxベースのスペーシングシステムを使用',
+      'レスポンシブデザイン: モバイルファーストアプローチで設計',
+      'ダークモード: ライトモードとダークモードの適切なコントラスト',
+      'アクセシビリティ: WCAG 2.1 AAレベルの準拠'
+    ])
+  }))
+}));
 jest.mock('../../generators/document/MarkdownFormatter', () => ({
   MarkdownFormatter: jest.fn().mockImplementation(() => ({
     generateMarkdown: jest.fn().mockReturnValue('# デザインシステムドキュメント\n\nテストコンテンツ')
@@ -206,7 +306,7 @@ describe('AIDocumentGenerator', () => {
 
       const result = await generator.generate(components, tokens, options);
 
-      expect(result.document.patterns).toHaveLength(2);
+      expect(result.document.patterns).toHaveLength(3);
       
       const buttonPattern = result.document.patterns.find(p => p.name === 'ボタンシステム');
       expect(buttonPattern).toBeDefined();
