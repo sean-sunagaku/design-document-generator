@@ -7,6 +7,7 @@ import { PropExtractor } from './ast/PropExtractor';
 import { JSXStructureExtractor } from './ast/JSXStructureExtractor';
 import { ComponentCategorizer } from './ast/ComponentCategorizer';
 import { StyleExtractorFactory } from './StyleExtractorFactory';
+import { ConfigManager } from '../config/ConfigManager';
 
 export class TailwindExtractor {
   private config: ExtractorConfig;
@@ -27,8 +28,12 @@ export class TailwindExtractor {
     this.jsxExtractor = new JSXStructureExtractor();
     this.categorizer = new ComponentCategorizer();
     
-    // デフォルトでTailwindStyleExtractorを使用
-    this.styleExtractor = StyleExtractorFactory.createExtractor('tailwind', config);
+    // 設定されたスタイルシステムに応じてExtractorを作成
+    const configManager = ConfigManager.getInstance();
+    const appConfig = configManager.getConfig();
+    const styleSystem = appConfig.styleSystem || 'tailwind';
+    
+    this.styleExtractor = StyleExtractorFactory.createExtractor(styleSystem, config);
   }
 
   async extractFromFile(filePath: string): Promise<ExtractedComponent | null> {
@@ -76,16 +81,9 @@ export class TailwindExtractor {
 
       // 新しいスタイル抽出システムを使用
       const extractedStyles = this.extractStylesFromAST(ast);
-      const styleInfo: StyleInfo = {
-        type: 'tailwind',
-        tailwindClasses: Array.from(classes).sort(),
-        classes: Array.from(classes).sort(),
-        styles: {},
-        imports: [],
-        responsive: this.hasResponsiveClasses(Array.from(classes)),
-        darkMode: this.hasDarkModeClasses(Array.from(classes)),
-        animations: this.extractAnimations(Array.from(classes))
-      };
+      
+      // スタイル情報を構築 - extractedStylesの結果に基づいて決定
+      const styleInfo: StyleInfo = this.buildStyleInfo(extractedStyles, Array.from(classes));
 
       return {
         filePath,

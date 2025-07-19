@@ -19,7 +19,11 @@ jest.mock('../../utils/fileUtils', () => ({
 jest.mock('../../generators/document/ComponentDocumentGenerator');
 jest.mock('../../generators/document/PatternDetector');
 jest.mock('../../generators/document/GuidelineGenerator');
-jest.mock('../../generators/document/MarkdownFormatter');
+jest.mock('../../generators/document/MarkdownFormatter', () => ({
+  MarkdownFormatter: jest.fn().mockImplementation(() => ({
+    generateMarkdown: jest.fn().mockReturnValue('# デザインシステムドキュメント\n\nテストコンテンツ')
+  }))
+}));
 
 describe('AIDocumentGenerator', () => {
   let generator: AIDocumentGenerator;

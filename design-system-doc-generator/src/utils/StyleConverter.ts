@@ -45,11 +45,16 @@ export class StyleConverter {
         warnings.push(...result.warnings);
       } else {
         unmappedProperties.push(className);
-        warnings.push({
-          type: 'unsupported',
-          message: `Tailwind class '${className}' cannot be converted to React Native StyleSheet`,
-          originalValue: className
-        });
+        // Check if there are already warnings from convertTailwindClass (like manual_review)
+        if (result.warnings.length > 0) {
+          warnings.push(...result.warnings);
+        } else {
+          warnings.push({
+            type: 'unsupported',
+            message: `Tailwind class '${className}' cannot be converted to React Native StyleSheet`,
+            originalValue: className
+          });
+        }
       }
     });
 

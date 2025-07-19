@@ -20,13 +20,17 @@ describe('ConfigManager', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // ConfigManagerのシングルトンインスタンスをリセット
+    // ConfigManagerのシングルトンインスタンスとconfigを強制リセット
     (ConfigManager as any).instance = undefined;
     configManager = ConfigManager.getInstance();
+    (configManager as any).config = undefined; // 内部configもリセット
     
     // requireキャッシュのモック
     delete require.cache;
     require.cache = {};
+    
+    // Silence console warnings during tests
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   describe('singleton pattern', () => {
@@ -113,13 +117,17 @@ describe('ConfigManager', () => {
         }
       };
 
-      mockFs.existsSync
-        .mockReturnValueOnce(false) // design-system.config.js
-        .mockReturnValueOnce(false) // design-system.config.json  
-        .mockReturnValueOnce(false) // .design-system.json
-        .mockReturnValueOnce(true);  // package.json
+      // Only package.json should exist
+      mockFs.existsSync.mockImplementation((filePath: string) => {
+        return filePath === 'package.json';
+      });
 
-      mockFs.readFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
+      mockFs.readFileSync.mockImplementation((filePath: string) => {
+        if (filePath === 'package.json') {
+          return JSON.stringify(mockPackageJson);
+        }
+        throw new Error(`File not found: ${filePath}`);
+      });
 
       const config = await configManager.loadConfig();
 

@@ -119,7 +119,14 @@ export class ConfigManager {
         if (fs.existsSync(filePath)) {
           this.configPath = filePath;
           
-          if (filePath.endsWith('.js')) {
+          if (filePath === 'package.json') {
+            // package.jsonのdesignSystemフィールド
+            const content = fs.readFileSync(filePath, 'utf-8');
+            const pkg = JSON.parse(content);
+            if (pkg.designSystem) {
+              this.config = pkg.designSystem;
+            }
+          } else if (filePath.endsWith('.js')) {
             // JavaScript設定ファイル
             delete require.cache[require.resolve(path.resolve(filePath))];
             this.config = require(path.resolve(filePath));
@@ -127,13 +134,6 @@ export class ConfigManager {
             // JSON設定ファイル
             const content = fs.readFileSync(filePath, 'utf-8');
             this.config = JSON.parse(content);
-          } else if (filePath === 'package.json') {
-            // package.jsonのdesignSystemフィールド
-            const content = fs.readFileSync(filePath, 'utf-8');
-            const pkg = JSON.parse(content);
-            if (pkg.designSystem) {
-              this.config = pkg.designSystem;
-            }
           }
           
           if (this.config) {
@@ -200,7 +200,7 @@ export class ConfigManager {
   }
 
   private validateAndNormalizeConfig(config: DesignSystemConfig): DesignSystemConfig {
-    // 基本的なバリデーション
+    // 基本的なバリデーション - 設定されていない場合のみデフォルト値を設定
     if (!config.platform) {
       config.platform = 'web';
     }
@@ -209,8 +209,34 @@ export class ConfigManager {
       config.styleSystem = 'tailwind';
     }
 
+    // generation設定のデフォルト値設定
+    if (!config.generation) {
+      config.generation = {
+        includeExamples: true,
+        includeStyleValidation: true,
+        includeAccessibilityInfo: true,
+        includeBestPractices: true,
+        platformSpecific: {}
+      };
+    } else {
+      // 個別プロパティのデフォルト値設定
+      if (!config.generation.platformSpecific) {
+        config.generation.platformSpecific = {};
+      }
+    }
+
+    // extensions設定のデフォルト値設定
+    if (!config.extensions) {
+      config.extensions = {
+        customPlatforms: {},
+        customStyleSystems: {},
+        customValidators: {},
+        customGenerators: {}
+      };
+    }
+
     // プラットフォーム固有設定のマージ
-    if (config.generation.platformSpecific[config.platform as string]) {
+    if (config.generation?.platformSpecific && config.generation.platformSpecific[config.platform as string]) {
       const platformSpecific = config.generation.platformSpecific[config.platform as string];
       config.generation = { ...config.generation, ...platformSpecific };
     }

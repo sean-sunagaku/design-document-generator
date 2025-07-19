@@ -240,7 +240,7 @@ describe('StyleSheetExtractor', () => {
     });
 
     it('should warn about web-only CSS properties', () => {
-      const styles = ['boxShadow: "0 2px 4px rgba(0,0,0,0.1)"'];
+      const styles = ['boxShadow property mentioned but not as CSS'];
       const result = extractor.validateStyles(styles);
 
       expect(result.warnings).toHaveLength(1);

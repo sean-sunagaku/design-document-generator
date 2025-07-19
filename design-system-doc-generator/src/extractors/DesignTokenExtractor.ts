@@ -3,6 +3,12 @@ import * as path from 'path';
 import { DesignTokens, ColorToken, TypographyTokens, ExtractedComponent } from '../types';
 
 export class DesignTokenExtractor {
+  private requireFn: any;
+
+  constructor(requireFn: any = require) {
+    this.requireFn = requireFn;
+  }
+
   async extractFromTailwindConfig(configPath: string): Promise<DesignTokens> {
     try {
       // Check if config exists
@@ -12,10 +18,10 @@ export class DesignTokenExtractor {
       }
 
       // Clear require cache to get fresh config
-      delete require.cache[require.resolve(path.resolve(configPath))];
+      delete this.requireFn.cache[this.requireFn.resolve(path.resolve(configPath))];
       
       // Load the config
-      const config = require(path.resolve(configPath));
+      const config = this.requireFn(path.resolve(configPath));
       const theme = config.theme || {};
       const extend = theme.extend || {};
 

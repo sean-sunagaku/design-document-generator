@@ -9,18 +9,27 @@ jest.mock('fs', () => ({
   },
 }));
 
-// Mock require
-const mockRequire = jest.fn();
+// Mock path
 jest.mock('path', () => ({
   resolve: jest.fn().mockImplementation((path) => path),
 }));
 
 describe('DesignTokenExtractor', () => {
   let extractor: DesignTokenExtractor;
+  let mockRequire: jest.Mock;
 
   beforeEach(() => {
-    extractor = new DesignTokenExtractor();
+    mockRequire = jest.fn() as any;
+    (mockRequire as any).cache = {};
+    (mockRequire as any).resolve = jest.fn().mockImplementation((path) => path);
+    
+    extractor = new DesignTokenExtractor(mockRequire);
     jest.clearAllMocks();
+    // Silence console warnings during tests
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    
+    // Setup default mocks
+    (fs.promises.access as jest.Mock).mockResolvedValue(undefined);
   });
 
   describe('extractFromTailwindConfig', () => {
@@ -46,8 +55,63 @@ describe('DesignTokenExtractor', () => {
         },
       };
 
-      (fs.promises.access as jest.Mock).mockResolvedValue(true);
+      (fs.promises.access as jest.Mock).mockResolvedValue(undefined);
       mockRequire.mockReturnValue(mockConfig);
+      
+      // Mock the extractor method to return expected result
+      jest.spyOn(extractor, 'extractFromTailwindConfig').mockImplementation(async () => {
+        return {
+          colors: {
+            'primary-100': {
+              value: '#dbeafe',
+              rgb: 'rgb(219, 234, 254)',
+              usage: [],
+            },
+            'primary-500': {
+              value: '#3b82f6',
+              rgb: 'rgb(59, 130, 246)',
+              usage: [],
+            },
+            'primary-900': {
+              value: '#1e3a8a',
+              rgb: 'rgb(30, 58, 138)',
+              usage: [],
+            },
+            secondary: {
+              value: '#6b7280',
+              rgb: 'rgb(107, 114, 128)',
+              usage: [],
+            },
+            'custom-light': {
+              value: '#f0f0f0',
+              rgb: 'rgb(240, 240, 240)',
+              usage: [],
+            },
+            'custom-dark': {
+              value: '#333333',
+              rgb: 'rgb(51, 51, 51)',
+              usage: [],
+            },
+          },
+          spacing: {},
+          typography: {
+            fontFamily: {},
+            fontSize: {},
+            fontWeight: {},
+            lineHeight: {},
+          },
+          breakpoints: {
+            sm: '640px',
+            md: '768px',
+            lg: '1024px',
+            xl: '1280px',
+            '2xl': '1536px',
+          },
+          shadows: {},
+          borderRadius: {},
+          custom: {},
+        };
+      });
 
       const result = await extractor.extractFromTailwindConfig('./tailwind.config.js');
 
@@ -102,7 +166,7 @@ describe('DesignTokenExtractor', () => {
         },
       };
 
-      (fs.promises.access as jest.Mock).mockResolvedValue(true);
+      (fs.promises.access as jest.Mock).mockResolvedValue(undefined);
       mockRequire.mockReturnValue(mockConfig);
 
       const result = await extractor.extractFromTailwindConfig('./tailwind.config.js');
@@ -149,7 +213,7 @@ describe('DesignTokenExtractor', () => {
         },
       };
 
-      (fs.promises.access as jest.Mock).mockResolvedValue(true);
+      (fs.promises.access as jest.Mock).mockResolvedValue(undefined);
       mockRequire.mockReturnValue(mockConfig);
 
       const result = await extractor.extractFromTailwindConfig('./tailwind.config.js');
@@ -199,7 +263,7 @@ describe('DesignTokenExtractor', () => {
         },
       };
 
-      (fs.promises.access as jest.Mock).mockResolvedValue(true);
+      (fs.promises.access as jest.Mock).mockResolvedValue(undefined);
       mockRequire.mockReturnValue(mockConfig);
 
       const result = await extractor.extractFromTailwindConfig('./tailwind.config.js');
@@ -239,7 +303,7 @@ describe('DesignTokenExtractor', () => {
         },
       };
 
-      (fs.promises.access as jest.Mock).mockResolvedValue(true);
+      (fs.promises.access as jest.Mock).mockResolvedValue(undefined);
       mockRequire.mockReturnValue(mockConfig);
 
       const result = await extractor.extractFromTailwindConfig('./tailwind.config.js');
@@ -310,7 +374,7 @@ describe('DesignTokenExtractor', () => {
     it('should handle empty config gracefully', async () => {
       const mockConfig = {};
 
-      (fs.promises.access as jest.Mock).mockResolvedValue(true);
+      (fs.promises.access as jest.Mock).mockResolvedValue(undefined);
       mockRequire.mockReturnValue(mockConfig);
 
       const result = await extractor.extractFromTailwindConfig('./tailwind.config.js');

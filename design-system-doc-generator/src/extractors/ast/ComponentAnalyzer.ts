@@ -42,20 +42,32 @@ export class ComponentAnalyzer {
     // Check for React component patterns
     const hasJSX = /<[a-zA-Z][a-zA-Z0-9]*/.test(content);
     const hasReactImport = /import\s+.*\s+from\s+['"]react['"]/.test(content);
-    const hasExport = /export\s+(default\s+)?(function|const|class)/.test(content);
+    const hasExport = /export\s+(default\s+)?(function|const|class|[A-Z]\w*)/.test(content);
     
     return hasJSX && hasReactImport && hasExport;
   }
 
   private extractComponentName(ast: any, filePath: string): string | null {
     let componentName: string | null = null;
+    const variableDeclarations = new Map<string, string>();
 
-    // Look for exports
+    // First pass: collect variable declarations
+    for (const node of ast.body) {
+      if (node.type === 'VariableDeclaration') {
+        for (const declaration of node.declarations) {
+          if (declaration.id?.type === 'Identifier') {
+            variableDeclarations.set(declaration.id.name, declaration.id.name);
+          }
+        }
+      }
+    }
+
+    // Second pass: look for exports
     for (const node of ast.body) {
       if (node.type === 'ExportDefaultDeclaration') {
-        componentName = this.getNameFromDeclaration(node.declaration);
+        componentName = this.getNameFromDeclaration(node.declaration, variableDeclarations);
       } else if (node.type === 'ExportNamedDeclaration' && node.declaration) {
-        componentName = this.getNameFromDeclaration(node.declaration);
+        componentName = this.getNameFromDeclaration(node.declaration, variableDeclarations);
       }
       
       if (componentName) break;
@@ -70,10 +82,14 @@ export class ComponentAnalyzer {
     return componentName;
   }
 
-  private getNameFromDeclaration(declaration: any): string | null {
+  private getNameFromDeclaration(declaration: any, variableDeclarations?: Map<string, string>): string | null {
     if (declaration.type === 'FunctionDeclaration' && declaration.id) {
       return declaration.id.name;
     } else if (declaration.type === 'Identifier') {
+      // If it's an identifier, it might be a reference to a variable
+      if (variableDeclarations && variableDeclarations.has(declaration.name)) {
+        return declaration.name;
+      }
       return declaration.name;
     } else if (declaration.type === 'VariableDeclaration') {
       const firstDeclarator = declaration.declarations[0];

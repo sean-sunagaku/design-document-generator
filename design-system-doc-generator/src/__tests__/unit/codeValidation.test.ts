@@ -1,5 +1,27 @@
 import { CodeValidator } from '../../utils/codeValidation';
 
+// Mock TypeScript modules
+const mockTs = {
+  createSourceFile: jest.fn().mockReturnValue({}),
+  getPreEmitDiagnostics: jest.fn().mockReturnValue([]),
+  ScriptTarget: { ES2020: 1 },
+  ScriptKind: { TSX: 1 },
+  DiagnosticCategory: { Error: 1, Warning: 2 }
+};
+
+const mockTsEslint = {
+  parseAndGenerateServices: jest.fn().mockReturnValue({
+    services: {
+      program: {
+        getSemanticDiagnostics: jest.fn().mockReturnValue([])
+      }
+    }
+  })
+};
+
+jest.doMock('typescript', () => mockTs);
+jest.doMock('@typescript-eslint/typescript-estree', () => mockTsEslint);
+
 describe('CodeValidator', () => {
   let validator: CodeValidator;
 

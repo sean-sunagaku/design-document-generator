@@ -256,10 +256,18 @@ export class StyleSheetExtractor extends StyleExtractor {
         const webOnlyProperties = ['boxShadow', 'textShadow', 'cursor', 'userSelect'];
         webOnlyProperties.forEach(prop => {
           if (style.includes(prop)) {
-            result.warnings.push({
-              message: `CSS property '${prop}' may not be supported in React Native`,
-              code: 'UNSUPPORTED_CSS_PROP'
-            });
+            // Determine if it's a stylesheet property (prop: value) or just mentioned
+            if (style.includes(`${prop}:`)) {
+              result.errors.push({
+                message: `StyleSheet property '${prop}' is not supported in React Native`,
+                code: 'UNSUPPORTED_STYLESHEET_PROP'
+              });
+            } else {
+              result.warnings.push({
+                message: `CSS property '${prop}' may not be supported in React Native`,
+                code: 'UNSUPPORTED_CSS_PROP'
+              });
+            }
           }
         });
       } else if (typeof style === 'object') {
@@ -361,6 +369,15 @@ export class StyleSheetExtractor extends StyleExtractor {
       return node.value;
     } else if (node.type === 'UnaryExpression' && node.operator === '-') {
       return -this.parseStyleValue(node.argument);
+    } else if (node.type === 'ObjectExpression') {
+      // Handle nested object expressions
+      const obj: Record<string, any> = {};
+      node.properties.forEach((prop: any) => {
+        if (prop.type === 'Property' && prop.key?.name) {
+          obj[prop.key.name] = this.parseStyleValue(prop.value);
+        }
+      });
+      return obj;
     }
     return node.raw || 'unknown';
   }

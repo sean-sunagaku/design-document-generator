@@ -184,6 +184,21 @@ describe('ComponentAnalyzer', () => {
         type: 'Program',
         body: [
           {
+            type: 'VariableDeclaration',
+            declarations: [
+              {
+                type: 'VariableDeclarator',
+                id: {
+                  type: 'Identifier',
+                  name: 'Button'
+                },
+                init: {
+                  type: 'ArrowFunctionExpression'
+                }
+              }
+            ]
+          },
+          {
             type: 'ExportDefaultDeclaration',
             declaration: {
               type: 'Identifier',
