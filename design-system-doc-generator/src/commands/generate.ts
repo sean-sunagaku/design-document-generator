@@ -40,6 +40,13 @@ export class GenerateCommand {
     const finalPlatform = (this.options.platform || config.platform) as Platform;
     const finalStyleSystem = (this.options.styleSystem || config.styleSystem) as StyleSystem;
     
+    // ConfigManagerに最終的な設定をセット
+    configManager.setConfig({
+      ...config,
+      platform: finalPlatform,
+      styleSystem: finalStyleSystem,
+    });
+    
     console.log(chalk.gray(`Platform: ${finalPlatform}, Style System: ${finalStyleSystem}`));
 
     // 既存のTailwindExtractorを使用（一時的な修正）

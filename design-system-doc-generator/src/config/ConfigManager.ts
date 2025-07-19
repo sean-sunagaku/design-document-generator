@@ -160,6 +160,10 @@ export class ConfigManager {
     return this.config;
   }
 
+  setConfig(config: DesignSystemConfig): void {
+    this.config = this.validateAndNormalizeConfig(config);
+  }
+
   private getDefaultConfig(): DesignSystemConfig {
     return {
       platform: 'web',

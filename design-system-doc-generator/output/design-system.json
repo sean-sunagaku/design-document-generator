@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "generated": "2025-07-19T22:40:55.558Z",
+  "project": {
+    "name": "design-system-doc-generator",
+    "version": "1.0.0",
+    "framework": "react",
+    "styling": "tailwindcss"
+  },
+  "tokens": {
+    "colors": {},
+    "spacing": {},
+    "typography": {
+      "fontFamily": {},
+      "fontSize": {},
+      "fontWeight": {},
+      "lineHeight": {}
+    },
+    "breakpoints": {
+      "sm": "640px",
+      "md": "768px",
+      "lg": "1024px",
+      "xl": "1280px",
+      "2xl": "1536px"
+    },
+    "shadows": {},
+    "borderRadius": {},
+    "custom": {}
+  },
+  "components": [],
+  "patterns": [],
+  "guidelines": [
+    "コンポーネント構成: Atoms(0), Molecules(0), Organisms(0), Templates(0), Pages(0)。Atomic Designの原則に従ってコンポーネントを構築してください。"
+  ]
+}

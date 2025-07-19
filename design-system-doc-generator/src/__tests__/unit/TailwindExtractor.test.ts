@@ -594,5 +594,94 @@ describe('TailwindExtractor', () => {
       expect(result?.tailwindClasses).toContain('focus:ring-2');
       expect(result?.tailwindClasses).toContain('dark:bg-gray-800');
     });
+
+    it('should handle React Native StyleSheet extraction', async () => {
+      const mockContent = `
+        import React from 'react';
+        import { View, Text, StyleSheet } from 'react-native';
+        
+        export default function Button() {
+          return (
+            <View style={styles.container}>
+              <Text style={styles.text}>Button</Text>
+            </View>
+          );
+        }
+
+        const styles = StyleSheet.create({
+          container: {
+            padding: 16,
+            backgroundColor: '#3B82F6',
+            borderRadius: 6,
+          },
+          text: {
+            color: '#FFFFFF',
+            fontWeight: '600',
+          },
+        });
+      `;
+
+      (fs.promises.readFile as jest.Mock).mockResolvedValue(mockContent);
+
+      // Mock ConfigManager to return React Native config
+      const mockConfigManager = require('../../config/ConfigManager').ConfigManager.getInstance();
+      mockConfigManager.getConfig.mockReturnValue({
+        styleSystem: 'stylesheet',
+        platform: 'react-native',
+        sourceDir: './test-fixtures',
+        ignore: []
+      });
+
+      // Mock StyleExtractorFactory to return React Native styles
+      const { StyleExtractorFactory } = require('../../extractors/StyleExtractorFactory');
+      StyleExtractorFactory.createExtractor.mockReturnValue({
+        extractStyles: jest.fn().mockReturnValue([
+          {
+            type: 'stylesheet',
+            value: {
+              container: { padding: 16, backgroundColor: '#3B82F6', borderRadius: 6 },
+              text: { color: '#FFFFFF', fontWeight: '600' }
+            },
+            imports: ['StyleSheet'],
+            source: 'StyleSheet.create()'
+          }
+        ])
+      });
+
+      // Create a fresh extractor instance after setting up mocks
+      const freshExtractor = new TailwindExtractor({
+        sourceDir: './test-fixtures',
+        ignore: ['**/*.test.tsx'],
+      });
+
+      // Mock the instance methods
+      freshExtractor['componentAnalyzer'].analyzeFile = jest.fn().mockResolvedValue({
+        content: mockContent,
+        ast: { type: 'Program', body: [] },
+        componentName: 'Button',
+        isComponentFile: true
+      });
+
+      freshExtractor['astTraverser'].traverse = jest.fn().mockImplementation((ast, callbacks) => {
+        if (callbacks.onImport) {
+          callbacks.onImport('react');
+          callbacks.onImport('react-native');
+        }
+      });
+
+      freshExtractor['tailwindExtractor'].extractClasses = jest.fn().mockReturnValue([]);
+      freshExtractor['categorizer'].categorizeComponent = jest.fn().mockReturnValue('atoms');
+
+      const result = await freshExtractor.extractFromFile('/test/Button.tsx');
+
+      expect(result).not.toBeNull();
+      expect(result?.componentName).toBe('Button');
+      expect(result?.styleInfo.type).toBe('stylesheet');
+      expect(result?.styleInfo.styles).toEqual({
+        container: { padding: 16, backgroundColor: '#3B82F6', borderRadius: 6 },
+        text: { color: '#FFFFFF', fontWeight: '600' }
+      });
+      expect(result?.styleInfo.imports).toContain('StyleSheet');
+    });
   });
 });

@@ -151,7 +151,7 @@ export class MarkdownFormatter {
           }
 
           // Tailwind classes
-          if (comp.styles.tailwindClasses.length > 0) {
+          if (comp.styles.tailwindClasses && comp.styles.tailwindClasses.length > 0) {
             md += `- 使用クラス: ${comp.styles.tailwindClasses.slice(0, 10).map(cls => `\`${cls}\``).join(', ')}`;
             if (comp.styles.tailwindClasses.length > 10) {
               md += ` +${comp.styles.tailwindClasses.length - 10}個`;
