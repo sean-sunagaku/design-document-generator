@@ -4,16 +4,46 @@ import { DesignTokenExtractor } from '../extractors/DesignTokenExtractor';
 import { findFiles, writeJsonFile, ensureDirectoryExists } from '../utils/fileUtils';
 import { Snapshot } from '../types';
 
+/**
+ * Snapshotコマンドのオプション設定
+ */
 export interface SnapshotOptions {
+  /** ソースディレクトリのパス */
   source: string;
+  /** 設定ファイルのパス（任意） */
   config?: string;
+  /** 出力ファイルのパス */
   output: string;
+  /** 出力形式 */
   format: 'json' | 'markdown';
 }
 
+/**
+ * SnapshotCommand - デザインシステムスナップショット作成コマンド
+ * 
+ * このクラスは、現在のデザインシステムの状態を記録し、
+ * 将来の比較・差分検出のためのスナップショットファイルを生成します。
+ * 
+ * 主な機能：
+ * 1. 全コンポーネントの現在状態記録
+ * 2. デザイントークンの状態記録
+ * 3. タイムスタンプ付きスナップショット生成
+ * 4. JSON/Markdown形式での出力
+ * 
+ * 活用場面：
+ * - バージョン管理でのデザインシステム変更追跡
+ * - CI/CDでの自動スナップショット作成
+ * - リリース前の状態記録
+ * - 差分分析の基準データ作成
+ */
 export class SnapshotCommand {
   private options: SnapshotOptions;
 
+  /**
+   * SnapshotCommandのコンストラクタ
+   * 
+   * @param options - スナップショット作成オプション
+   */
   constructor(options: SnapshotOptions) {
     this.options = options;
   }

@@ -1,47 +1,139 @@
 import { Platform, StyleSystem, ExtractorConfig, StyleInfo as BaseStyleInfo } from '../types';
 import { ConfigManager } from '../config/ConfigManager';
 
-// 抽象基底クラス
-export abstract class StyleExtractor {
-  protected config: ExtractorConfig;
+/**
+ * StyleExtractorFactory - マルチプラットフォーム対応スタイル抽出ファクトリー
+ * 
+ * このファイルには、異なるスタイルシステム（Tailwind CSS、React Native StyleSheet、
+ * Styled Components、CSS Modules）に対応した抽出器を統一的に管理するファクトリーパターンと、
+ * 各プラットフォーム固有のスタイル抽出・検証・例示機能を提供するクラス群が含まれています。
+ * 
+ * アーキテクチャパターン:
+ * - Factory Pattern: 設定に基づいて適切なエクストラクターを生成
+ * - Strategy Pattern: プラットフォーム毎の異なるスタイル抽出戦略
+ * - Template Method Pattern: 共通インターフェースによる処理の統一化
+ * - Plugin Architecture: カスタムスタイルシステムの動的読み込み
+ * 
+ * 主な機能:
+ * - 複数スタイルシステムの統一的な処理
+ * - プラットフォーム固有の制約・バリデーション
+ * - コード例生成とドキュメント化支援
+ * - 拡張可能なカスタムエクストラクター対応
+ * 
+ * 対応スタイルシステム:
+ * - Tailwind CSS (Web)
+ * - React Native StyleSheet
+ * - Styled Components
+ * - CSS Modules
+ * - カスタムスタイルシステム（プラグイン対応）
+ */
 
+/**
+ * StyleExtractor - スタイル抽出器の抽象基底クラス
+ * 
+ * 全てのスタイルシステム専用エクストラクターが実装すべき共通インターフェースを定義します。
+ * Template Method パターンにより、各プラットフォームで一貫した処理フローを保証します。
+ * 
+ * 抽象メソッド:
+ * - extractStyles: ASTノードからスタイル情報を抽出
+ * - validateStyles: 抽出されたスタイルの妥当性検証
+ * - generateExamples: ドキュメント用コード例の生成
+ */
+export abstract class StyleExtractor {
+  protected config: ExtractorConfig;  // 抽出設定（全サブクラス共通）
+
+  /**
+   * 基底コンストラクタ
+   * @param config 抽出器設定
+   */
   constructor(config: ExtractorConfig) {
     this.config = config;
   }
 
+  /**
+   * ASTノードからスタイル情報を抽出（抽象メソッド）
+   * @param node 解析対象のASTノード
+   * @returns 抽出されたスタイル情報の配列
+   */
   abstract extractStyles(node: any): ExtractedStyleInfo[];
+  
+  /**
+   * 抽出されたスタイルの妥当性を検証（抽象メソッド）
+   * @param styles 検証対象のスタイル配列
+   * @returns 検証結果（エラー・警告を含む）
+   */
   abstract validateStyles(styles: string[]): ValidationResult;
+  
+  /**
+   * ドキュメント用のコード例を生成（抽象メソッド）
+   * @param styles 例示対象のスタイル情報
+   * @returns 生成されたコード例文字列
+   */
   abstract generateExamples(styles: ExtractedStyleInfo[]): string;
 }
 
+/**
+ * ExtractedStyleInfo - 抽出されたスタイル情報
+ * 
+ * 異なるスタイルシステムから抽出されたスタイル情報を統一的に表現するための
+ * データ構造です。プラットフォーム固有の情報も含めて管理します。
+ */
 export interface ExtractedStyleInfo {
-  type: 'className' | 'inline' | 'stylesheet' | 'styled-component';
-  value: string | Record<string, any>;
-  source?: string; // ソースファイルパス（StyleSheetの場合）
-  imports?: string[]; // 必要なimport文
+  type: 'className' | 'inline' | 'stylesheet' | 'styled-component';  // スタイルの種類
+  value: string | Record<string, any>;   // スタイルの値（文字列またはオブジェクト）
+  source?: string;                       // ソースファイルパス（StyleSheetの場合）
+  imports?: string[];                    // 必要なimport文（React Nativeなど）
 }
 
+/**
+ * ValidationResult - スタイル検証結果
+ * 
+ * スタイルの妥当性検証結果を格納します。エラーと警告を区別して管理し、
+ * 位置情報とエラーコードも含めて詳細な診断情報を提供します。
+ */
 export interface ValidationResult {
-  isValid: boolean;
-  errors: StyleError[];
-  warnings: StyleWarning[];
+  isValid: boolean;      // 全体的な妥当性
+  errors: StyleError[];  // 致命的エラー一覧
+  warnings: StyleWarning[];  // 警告一覧
 }
 
+/**
+ * StyleError - スタイルエラー情報
+ * 
+ * 修正が必要な致命的なスタイルエラーの詳細情報です。
+ */
 export interface StyleError {
-  message: string;
-  line?: number;
-  column?: number;
-  code?: string;
+  message: string;    // エラーメッセージ
+  line?: number;      // 行番号（オプション）
+  column?: number;    // 列番号（オプション）
+  code?: string;      // エラーコード（分類用）
 }
 
+/**
+ * StyleWarning - スタイル警告情報
+ * 
+ * 修正が推奨されるが致命的ではない警告の詳細情報です。
+ */
 export interface StyleWarning {
-  message: string;
-  line?: number;
-  column?: number;
-  code?: string;
+  message: string;    // 警告メッセージ
+  line?: number;      // 行番号（オプション）
+  column?: number;    // 列番号（オプション）
+  code?: string;      // 警告コード（分類用）
 }
 
-// Tailwind CSS Extractor（既存の実装を移行）
+/**
+ * TailwindStyleExtractor - Tailwind CSS専用スタイル抽出器
+ * 
+ * Webプラットフォーム向けのTailwind CSSクラスを抽出・検証・例示する専門クラスです。
+ * 高度なパターンマッチングと包括的なクラス検証機能を提供します。
+ * 
+ * 主な機能:
+ * - 静的・動的クラス名の抽出
+ * - Tailwindパターンマッチング
+ * - レスポンシブ・状態クラスの検出
+ * - 無効クラスの検証と警告
+ * - HTMLコード例の生成
+ */
 export class TailwindStyleExtractor extends StyleExtractor {
   private tailwindPatterns: RegExp[];
 
@@ -185,7 +277,22 @@ export class TailwindStyleExtractor extends StyleExtractor {
   }
 }
 
-// React Native StyleSheet Extractor
+/**
+ * StyleSheetExtractor - React Native StyleSheet専用抽出器
+ * 
+ * React Nativeプラットフォーム向けのStyleSheet.create()スタイル抽出器です。
+ * Web固有のCSSプロパティを検出して警告を出し、React Native固有の制約を
+ * 検証する機能を提供します。
+ * 
+ * 主な機能:
+ * - StyleSheet.create()の解析
+ * - インラインスタイルの抽出
+ * - styles参照の検出
+ * - React Native制約の検証
+ * - Web非互換プロパティの警告
+ * - React Nativeコード例の生成
+ * - Platform.OS分岐の検出
+ */
 export class StyleSheetExtractor extends StyleExtractor {
   private reactNativeComponents = [
     'View', 'Text', 'ScrollView', 'TouchableOpacity', 'TouchableHighlight',
@@ -416,7 +523,17 @@ export class StyleSheetExtractor extends StyleExtractor {
   }
 }
 
-// Styled Components Extractor
+/**
+ * StyledComponentsExtractor - Styled Components専用抽出器
+ * 
+ * CSS-in-JSライブラリのStyled Componentsのテンプレートリテラルから
+ * CSSスタイルを抽出する専門クラスです。
+ * 
+ * 主な機能:
+ * - tagged template literalの解析
+ * - CSS文字列の抽出
+ * - Styled Componentsコード例の生成
+ */
 export class StyledComponentsExtractor extends StyleExtractor {
   extractStyles(node: any): ExtractedStyleInfo[] {
     const styles: ExtractedStyleInfo[] = [];
@@ -466,7 +583,17 @@ export class StyledComponentsExtractor extends StyleExtractor {
   }
 }
 
-// CSS Modules Extractor
+/**
+ * CSSModulesExtractor - CSS Modules専用抽出器
+ * 
+ * CSS Modulesのスタイル参照（styles.className）を検出・抽出する
+ * 専門クラスです。
+ * 
+ * 主な機能:
+ * - styles.className参照の検出
+ * - CSSモジュールクラス名の抽出
+ * - CSS Modulesコード例の生成
+ */
 export class CSSModulesExtractor extends StyleExtractor {
   extractStyles(node: any): ExtractedStyleInfo[] {
     const styles: ExtractedStyleInfo[] = [];
@@ -511,12 +638,43 @@ export class CSSModulesExtractor extends StyleExtractor {
   }
 }
 
-// ファクトリークラス
+/**
+ * StyleExtractorFactory - スタイル抽出器ファクトリー
+ * 
+ * 設定に基づいて適切なStyleExtractorインスタンスを生成するファクトリークラスです。
+ * Factory Patternにより、各プラットフォーム・スタイルシステムに特化した
+ * 抽出器を統一的なインターフェースで提供し、カスタムエクストラクターの
+ * 動的読み込みもサポートします。
+ * 
+ * サポート機能:
+ * - 標準スタイルシステムの自動選択
+ * - カスタムスタイルシステムの動的読み込み
+ * - 複数スタイルシステムの組み合わせ対応
+ * - 設定ベースの柔軟な拡張性
+ * 
+ * 標準対応:
+ * - tailwind: TailwindStyleExtractor
+ * - stylesheet: StyleSheetExtractor
+ * - styled-components: StyledComponentsExtractor
+ * - css-modules: CSSModulesExtractor
+ */
 export class StyleExtractorFactory {
+  /**
+   * 指定されたスタイルシステムに対応する抽出器を生成
+   * 
+   * 設定されたスタイルシステムに基づいて適切なStyleExtractorを選択・生成します。
+   * 標準対応のスタイルシステムに加え、ConfigManagerに登録された
+   * カスタムスタイルシステムにも対応します。
+   * 
+   * @param styleSystem 対象のスタイルシステム名
+   * @param config 抽出器設定
+   * @returns 対応するStyleExtractorインスタンス
+   * @throws {Error} 未対応のスタイルシステムの場合
+   */
   static createExtractor(styleSystem: StyleSystem | string, config: ExtractorConfig): StyleExtractor {
     const configManager = ConfigManager.getInstance();
     
-    // 標準のスタイルシステム
+    // 標準スタイルシステムの選択と生成
     switch (styleSystem) {
       case 'tailwind':
         return new TailwindStyleExtractor(config);
@@ -527,7 +685,7 @@ export class StyleExtractorFactory {
       case 'css-modules':
         return new CSSModulesExtractor(config);
       default:
-        // カスタムスタイルシステムの処理
+        // カスタムスタイルシステムの動的読み込み
         if (configManager.isCustomStyleSystem(styleSystem)) {
           return this.createCustomExtractor(styleSystem, config);
         }
@@ -535,6 +693,17 @@ export class StyleExtractorFactory {
     }
   }
 
+  /**
+   * カスタムスタイルシステム用抽出器の動的生成
+   * 
+   * ConfigManagerに登録されたカスタムスタイルシステム設定に基づいて、
+   * 外部モジュールから抽出器クラスを動的に読み込んで生成します。
+   * 
+   * @param styleSystem カスタムスタイルシステム名
+   * @param config 抽出器設定
+   * @returns 動的に読み込まれたStyleExtractorインスタンス
+   * @throws {Error} 設定が見つからない、またはモジュール読み込みに失敗した場合
+   */
   private static createCustomExtractor(styleSystem: string, config: ExtractorConfig): StyleExtractor {
     const configManager = ConfigManager.getInstance();
     const customConfig = configManager.getConfig().extensions.customStyleSystems[styleSystem];
@@ -543,7 +712,7 @@ export class StyleExtractorFactory {
       throw new Error(`Custom style system not found: ${styleSystem}`);
     }
 
-    // 動的にカスタムエクストラクターを読み込み
+    // 外部モジュールの動的読み込みと抽出器クラスのインスタンス化
     try {
       const ExtractorClass = require(customConfig.extractor);
       return new ExtractorClass(config);
@@ -552,7 +721,21 @@ export class StyleExtractorFactory {
     }
   }
 
-  // 複数のスタイルシステムを組み合わせる場合
+  /**
+   * 複数スタイルシステム対応の抽出器配列を生成
+   * 
+   * 複数のスタイルシステムが混在するプロジェクト（例: Tailwind + CSS Modules）
+   * に対応するため、指定された全スタイルシステムの抽出器を生成します。
+   * 
+   * 使用例:
+   * - モノレポでプラットフォーム毎に異なるスタイルシステム
+   * - 段階的な移行期間での並行利用
+   * - コンポーネントライブラリでの複数形式サポート
+   * 
+   * @param styleSystems 対象スタイルシステム名の配列
+   * @param config 共通の抽出器設定
+   * @returns 各スタイルシステムに対応するStyleExtractor配列
+   */
   static createMultiExtractor(styleSystems: (StyleSystem | string)[], config: ExtractorConfig): StyleExtractor[] {
     return styleSystems.map(system => this.createExtractor(system, config));
   }

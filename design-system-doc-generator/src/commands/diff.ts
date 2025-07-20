@@ -4,15 +4,48 @@ import { DiffEngine } from '../core/DiffEngine';
 import { readJsonFile, fileExists } from '../utils/fileUtils';
 import { Snapshot } from '../types';
 
+/**
+ * Diffコマンドのオプション設定
+ */
 export interface DiffOptions {
+  /** 比較元スナップショットファイルのパス */
   from: string;
+  /** 比較先スナップショットファイルのパス（任意・省略時は最新） */
   to?: string;
 }
 
+/**
+ * DiffCommand - デザインシステム差分検出・表示コマンド
+ * 
+ * このクラスは、2つのスナップショット間の差分を検出し、
+ * 分かりやすい形式で変更内容を表示します。
+ * 
+ * 主な機能：
+ * 1. スナップショット間の詳細差分計算
+ * 2. コンポーネント変更の検出と分類
+ * 3. デザイントークン変更の検出
+ * 4. 視覚的な差分表示（色分け・統計）
+ * 
+ * 差分検出内容：
+ * - 追加/削除されたコンポーネント
+ * - 変更されたTailwindクラス
+ * - Props の変更
+ * - デザイントークンの変更
+ * 
+ * 活用場面：
+ * - PR レビュー時の変更確認
+ * - リリース前の変更サマリー
+ * - デザインシステム進化の追跡
+ */
 export class DiffCommand {
   private options: DiffOptions;
   private diffEngine: DiffEngine;
 
+  /**
+   * DiffCommandのコンストラクタ
+   * 
+   * @param options - 差分検出オプション
+   */
   constructor(options: DiffOptions) {
     this.options = options;
     this.diffEngine = new DiffEngine();

@@ -4,43 +4,152 @@ import { ComponentDocumentGenerator } from './document/ComponentDocumentGenerato
 import { StyleExtractorFactory } from '../extractors/StyleExtractorFactory';
 import { PlatformExtractorFactory } from '../extractors/PlatformExtractorFactory';
 
+/**
+ * マルチプラットフォームドキュメント生成オプション
+ * 
+ * 複数プラットフォーム対応のドキュメント生成における
+ * 詳細な制御オプションを定義します。
+ */
 export interface MultiPlatformDocumentOptions extends GeneratorOptions {
+  /** 対象プラットフォーム一覧 */
   platforms: Platform[];
+  /** プラットフォーム間比較の生成有無 */
   generateComparison: boolean;
+  /** スタイル変換例の生成有無 */
   includeStyleConversion: boolean;
 }
 
+/**
+ * プラットフォーム固有ドキュメント
+ * 
+ * 単一プラットフォーム向けに生成された
+ * 完全なドキュメントパッケージを表現します。
+ */
 export interface PlatformSpecificDocument {
+  /** 対象プラットフォーム */
   platform: Platform;
+  /** 生成されたAIドキュメント */
   document: AIDocument;
+  /** プラットフォーム固有のコンポーネントドキュメント一覧 */
   components: ComponentDoc[];
 }
 
+/**
+ * クロスプラットフォームコンポーネント分析結果
+ * 
+ * 複数プラットフォームで共通利用されるコンポーネントの
+ * 差異分析と統合情報を格納します。
+ */
 export interface CrossPlatformComponent {
+  /** コンポーネント名 */
   componentName: string;
+  /** プラットフォーム別のコンポーネント実装 */
   platforms: {
     [key in Platform]?: ComponentDoc;
   };
+  /** 全プラットフォーム共通のProps */
   sharedProps: any[];
+  /** プラットフォーム間の差異一覧 */
   platformDifferences: PlatformDifference[];
 }
 
+/**
+ * プラットフォーム間差異
+ * 
+ * 同一コンポーネントのプラットフォーム間での
+ * 具体的な差異を詳細に記録します。
+ */
 export interface PlatformDifference {
+  /** 差異のあるプラットフォーム */
   platform: Platform;
+  /** 差異のタイプ */
   type: 'styling' | 'props' | 'behavior' | 'imports';
+  /** 差異の説明 */
   description: string;
+  /** 具体的なコード例（任意） */
   example?: string;
 }
 
+/**
+ * MultiPlatformDocumentGenerator - マルチプラットフォーム対応ドキュメント生成エンジン
+ * 
+ * このクラスは、Web（React）とReact Nativeなど複数のプラットフォームで
+ * 動作するコンポーネントを統合的に文書化する専門ジェネレーターです。
+ * 
+ * 主な機能：
+ * 1. プラットフォーム固有ドキュメントの生成
+ * 2. クロスプラットフォーム分析と差異検出
+ * 3. 統合ドキュメントの生成
+ * 4. スタイル変換例の提供
+ * 5. プラットフォーム間比較レポート
+ * 
+ * 対応プラットフォーム：
+ * - Web（React + Tailwind CSS）
+ * - React Native（StyleSheet）
+ * - 将来的に他のプラットフォームへの拡張対応
+ * 
+ * アーキテクチャ上の位置：
+ * このクラスは、個別のAIDocumentGeneratorを拡張し、
+ * プラットフォーム横断的な視点でのドキュメント生成を担います。
+ * 
+ * 活用場面：
+ * - マルチプラットフォーム開発チーム向けドキュメント
+ * - プラットフォーム移行時の差異把握
+ * - 統一されたデザインシステムの維持
+ * - 開発者オンボーディング資料
+ */
 export class MultiPlatformDocumentGenerator {
   private configManager: ConfigManager;
   private componentDocGenerator: ComponentDocumentGenerator;
 
+  /**
+   * MultiPlatformDocumentGeneratorのコンストラクタ
+   * 
+   * 設定管理とコンポーネントドキュメント生成器を初期化します。
+   * Singletonパターンを使用してシステム全体の設定を共有します。
+   */
   constructor() {
     this.configManager = ConfigManager.getInstance();
     this.componentDocGenerator = new ComponentDocumentGenerator();
   }
 
+  /**
+   * マルチプラットフォームドキュメント生成のメイン処理
+   * 
+   * 複数のプラットフォームのコンポーネント情報を統合的に処理し、
+   * プラットフォーム固有ドキュメント、クロスプラットフォーム分析、
+   * 統合ドキュメントを包括的に生成します。
+   * 
+   * 処理フロー：
+   * 1. 各プラットフォーム固有のドキュメント生成
+   * 2. クロスプラットフォーム差異分析（オプション）
+   * 3. 統合ドキュメントの作成
+   * 4. 結果の集約と返却
+   * 
+   * @param componentsByPlatform - プラットフォーム別のコンポーネント情報
+   * @param options - マルチプラットフォーム生成オプション
+   * @returns 生成されたドキュメント群
+   * 
+   * 戻り値の構造：
+   * - platformDocuments: 各プラットフォーム専用ドキュメント
+   * - crossPlatformAnalysis: プラットフォーム間差異分析
+   * - unifiedDocument: 統合ドキュメント
+   * 
+   * 例：
+   * ```typescript
+   * const result = await generator.generateMultiPlatformDocumentation(
+   *   new Map([
+   *     ['web', webComponents],
+   *     ['react-native', rnComponents]
+   *   ]),
+   *   { 
+   *     platforms: ['web', 'react-native'],
+   *     generateComparison: true,
+   *     includeStyleConversion: true
+   *   }
+   * );
+   * ```
+   */
   async generateMultiPlatformDocumentation(
     componentsByPlatform: Map<Platform, ExtractedComponent[]>,
     options: MultiPlatformDocumentOptions
@@ -52,7 +161,8 @@ export class MultiPlatformDocumentGenerator {
     const platformDocuments: PlatformSpecificDocument[] = [];
     const crossPlatformComponents: CrossPlatformComponent[] = [];
 
-    // 各プラットフォームごとのドキュメント生成
+    // フェーズ1: 各プラットフォームごとのドキュメント生成
+    // 各プラットフォームの特性を活かした専用ドキュメントを作成
     for (const [platform, components] of componentsByPlatform) {
       const platformDoc = await this.generatePlatformSpecificDocument(
         platform,
@@ -62,13 +172,15 @@ export class MultiPlatformDocumentGenerator {
       platformDocuments.push(platformDoc);
     }
 
-    // クロスプラットフォーム分析
+    // フェーズ2: クロスプラットフォーム分析（オプション）
+    // プラットフォーム間の差異と共通点を詳細分析
     if (options.generateComparison) {
       const crossPlatformAnalysis = this.analyzeCrossPlatformComponents(platformDocuments);
       crossPlatformComponents.push(...crossPlatformAnalysis);
     }
 
-    // 統合ドキュメント生成
+    // フェーズ3: 統合ドキュメント生成
+    // 全プラットフォームを横断した統一視点のドキュメント作成
     const unifiedDocument = this.generateUnifiedDocument(
       platformDocuments,
       crossPlatformComponents,
@@ -82,6 +194,24 @@ export class MultiPlatformDocumentGenerator {
     };
   }
 
+  /**
+   * プラットフォーム固有ドキュメント生成処理
+   * 
+   * 指定されたプラットフォーム向けに最適化されたドキュメントを生成します。
+   * プラットフォーム特有の機能、制約、ベストプラクティスを反映した
+   * 専門的なドキュメントを作成します。
+   * 
+   * @param platform - 対象プラットフォーム
+   * @param components - プラットフォーム用のコンポーネント一覧
+   * @param options - 生成オプション
+   * @returns プラットフォーム固有ドキュメント
+   * 
+   * 処理内容：
+   * 1. 基本コンポーネントドキュメント生成
+   * 2. プラットフォーム固有の例示コード生成
+   * 3. プラットフォーム用ガイドライン適用
+   * 4. 統合ドキュメント構造への変換
+   */
   private async generatePlatformSpecificDocument(
     platform: Platform,
     components: ExtractedComponent[],
@@ -90,6 +220,7 @@ export class MultiPlatformDocumentGenerator {
     const config = this.configManager.getConfig();
     const platformComponents: ComponentDoc[] = [];
 
+    // 各コンポーネントのプラットフォーム固有ドキュメント生成
     for (const component of components) {
       const componentDoc = this.componentDocGenerator.generateComponentDoc(
         component,
@@ -97,7 +228,8 @@ export class MultiPlatformDocumentGenerator {
         options
       );
 
-      // プラットフォーム固有の拡張
+      // プラットフォーム固有の例示コード生成
+      // 各プラットフォームの慣習とベストプラクティスを反映
       componentDoc.examples = await this.generatePlatformSpecificExamples(
         component,
         platform,
@@ -513,8 +645,38 @@ const styles = StyleSheet.create(${JSON.stringify(styles, null, 2)});
   }
 }
 
-// スタイル変換ユーティリティ
+/**
+ * StyleConverter - プラットフォーム間スタイル変換ユーティリティ
+ * 
+ * このクラスは、異なるプラットフォーム間でのスタイル形式変換を提供します。
+ * 主にTailwind CSS（Web）とReact Native StyleSheetの相互変換を担います。
+ * 
+ * 主な機能：
+ * 1. Tailwind CSS → React Native StyleSheet変換
+ * 2. React Native StyleSheet → Tailwind CSS変換
+ * 3. プラットフォーム固有の制約への対応
+ * 4. 変換不可要素の適切なハンドリング
+ * 
+ * 制限事項：
+ * - 全てのスタイルプロパティが完全に変換可能ではない
+ * - プラットフォーム固有機能は変換対象外
+ * - 近似変換により完全性は保証されない
+ * 
+ * 拡張性：
+ * - 新しいスタイルプロパティの変換ルール追加
+ * - より高精度な変換アルゴリズムの実装
+ * - 他のスタイルシステムへの対応
+ */
 export class StyleConverter {
+  /**
+   * Tailwind CSS → React Native StyleSheet変換
+   * 
+   * Web用のTailwindクラスをReact Nativeで使用可能な
+   * StyleSheetオブジェクトに変換します。
+   * 
+   * @param tailwindClasses - 変換対象のTailwindクラス配列
+   * @returns React Native StyleSheetオブジェクト
+   */
   tailwindToStyleSheet(tailwindClasses: string[]): Record<string, any> {
     const styles: Record<string, any> = {};
     
@@ -526,6 +688,15 @@ export class StyleConverter {
     return { container: styles };
   }
 
+  /**
+   * React Native StyleSheet → Tailwind CSS変換
+   * 
+   * React NativeのStyleSheetオブジェクトを
+   * Web用のTailwindクラス文字列配列に変換します。
+   * 
+   * @param styleSheet - 変換対象のStyleSheetオブジェクト
+   * @returns Tailwindクラス文字列配列
+   */
   styleSheetToTailwind(styleSheet: Record<string, any>): string[] {
     const classes: string[] = [];
     
